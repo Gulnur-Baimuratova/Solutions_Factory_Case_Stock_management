@@ -1,0 +1,908 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mountain SPA · Помощник по складу и закупкам (прототип)</title><style>:root{--bg:#F6F3EE;--surface:#fff;--ink:#1E1C1A;--muted:#7A736B;--line:#E7E1D7;--sand:#A8844F;--sand2:#EFE6D6;--sea:#1F5C6E;--sea2:#E4EEF0;--red:#B3261E;--red2:#FBEAE8;--amber:#A86A12;--amber2:#FBF1DF;--violet:#5E4B8B;--violet2:#EEEAF6;--grey2:#EFEDEA;--green:#2F6B3F;--green2:#E6F1E8}
+*{box-sizing:border-box}html,body{margin:0;height:100%}
+body{font-family:"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:14px;line-height:1.45}
+.app{display:grid;grid-template-columns:232px 1fr;min-height:100vh}
+aside{background:#1E1C1A;color:#E9E4DB;padding:22px 16px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column}
+.brand{font-family:Georgia,"Times New Roman",serif;letter-spacing:.22em;font-size:17px;line-height:1.2;color:#fff}
+.brand small{display:block;letter-spacing:.3em;font-size:10px;color:#C9B28A;margin-top:4px}
+.assist{margin:8px 0 22px;font-size:12px;color:#A9A298}
+nav a{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;color:#D8D2C8;text-decoration:none;cursor:pointer;margin-bottom:2px;font-size:13.5px}
+nav a:hover{background:#2C2926}nav a.on{background:#3A342D;color:#fff}
+nav a .ic{width:18px;text-align:center;opacity:.85}
+.side-foot{margin-top:auto;font-size:11px;color:#8C857B;border-top:1px solid #34302B;padding-top:12px}
+main{padding:0 28px 60px;min-width:0}
+.top{position:sticky;top:0;z-index:5;background:var(--bg);display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:16px 0 12px;border-bottom:1px solid var(--line);margin-bottom:20px}
+.top h1{font-size:20px;margin:0 16px 0 0;font-weight:600}
+select,input[type=number],input[type=text]{font:inherit;border:1px solid var(--line);background:#fff;border-radius:8px;padding:6px 10px;color:var(--ink)}
+.top .asof{margin-left:auto;font-size:12px;color:var(--muted)}
+.btn{font:inherit;border:1px solid var(--ink);background:var(--ink);color:#fff;border-radius:8px;padding:7px 14px;cursor:pointer}
+.btn.ghost{background:#fff;color:var(--ink);border-color:var(--line)}.btn.sand{background:var(--sand);border-color:var(--sand)}
+.btn:hover{opacity:.9}
+.grid{display:grid;gap:16px}.g4{grid-template-columns:repeat(4,minmax(0,1fr))}.g3{grid-template-columns:repeat(3,minmax(0,1fr))}.g2{grid-template-columns:repeat(2,minmax(0,1fr))}.g5{grid-template-columns:repeat(5,minmax(0,1fr))}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+.card h3{margin:0 0 12px;font-size:15px;font-weight:600}
+.kpi .l{font-size:12px;color:var(--muted)}.kpi .v{font-size:24px;font-weight:600;margin-top:4px}.kpi .s{font-size:12px;color:var(--muted);margin-top:2px}
+.kpi.alert .v{color:var(--red)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;font-weight:600;color:var(--muted);font-size:12px;border-bottom:1px solid var(--line);padding:7px 8px;white-space:nowrap}
+td{border-bottom:1px solid #F0EBE3;padding:7px 8px;vertical-align:top}
+td.n,th.n{text-align:right;white-space:nowrap}
+tr.grp td{background:#FAF7F2;font-weight:600;color:var(--sand)}
+tr.tot td{font-weight:700;border-top:2px solid var(--ink)}
+.chip{display:inline-block;padding:2px 8px;border-radius:999px;font-size:11.5px;font-weight:600;white-space:nowrap}
+.red{background:var(--red2);color:var(--red)}.amber{background:var(--amber2);color:var(--amber)}.blue{background:var(--sea2);color:var(--sea)}.violet{background:var(--violet2);color:var(--violet)}.grey{background:var(--grey2);color:var(--muted)}.green{background:var(--green2);color:var(--green)}
+.wl{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #F0EBE3;align-items:flex-start;cursor:pointer}.wl:hover{background:#FCFAF7}
+.wl .t{flex:1}.wl b{font-weight:600}.wl .br{font-size:11.5px;color:var(--muted)}
+.filters{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.filters .chip{cursor:pointer;border:1px solid transparent}.filters .chip.off{opacity:.45}
+.muted{color:var(--muted)}.small{font-size:12px}
+.tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.tile{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:#fff}
+.tile .l{font-size:11.5px;color:var(--muted)}.tile .v{font-size:19px;font-weight:600;margin-top:3px}
+.tile.hi{background:var(--ink);color:#fff;border-color:var(--ink)}.tile.hi .l{color:#CFC8BD}
+.formula td:first-child{width:28%;font-weight:600}.formula td:nth-child(2){font-family:Consolas,Menlo,monospace;font-size:12.5px;color:#3B3631}
+.params{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end}.params label{font-size:12px;color:var(--muted);display:flex;flex-direction:column;gap:4px}
+.notice{border-left:3px solid var(--sand);background:var(--sand2);padding:10px 14px;border-radius:6px;font-size:13px}
+.notice.red{border-color:var(--red);background:var(--red2);color:var(--ink)}
+.notice.green{border-color:var(--green);background:var(--green2);color:var(--ink)}
+.bar{height:8px;background:var(--grey2);border-radius:99px;overflow:hidden}.bar i{display:block;height:100%;background:var(--sea)}
+.bar.over i{background:var(--red)}
+.chat{display:grid;grid-template-columns:1fr 300px;gap:16px;height:calc(100vh - 110px)}
+.msgs{overflow:auto;padding:4px 6px 10px;display:flex;flex-direction:column;gap:12px}
+.msg{max-width:92%;padding:12px 14px;border-radius:12px;background:#fff;border:1px solid var(--line)}
+.msg.me{align-self:flex-end;background:var(--ink);color:#fff;border-color:var(--ink)}
+.msg .fn{margin-top:8px;font-family:Consolas,Menlo,monospace;font-size:11.5px;color:var(--sea);background:var(--sea2);padding:6px 8px;border-radius:6px}
+.msg h4{margin:0 0 6px;font-size:14px}.msg table{margin:6px 0}
+.msg details{margin-top:8px;font-size:12.5px}.msg summary{cursor:pointer;color:var(--sand);font-weight:600}
+.inrow{display:flex;gap:8px;margin-top:8px}.inrow input{flex:1;padding:10px 12px}
+.qs{overflow:auto}.qs button{display:block;width:100%;text-align:left;font:inherit;font-size:12.5px;background:#fff;border:1px solid var(--line);border-radius:8px;padding:7px 10px;margin-bottom:6px;cursor:pointer}.qs button:hover{border-color:var(--sand)}
+.qs h5{margin:12px 0 6px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.typing{color:var(--muted);font-size:12.5px}
+.demo{position:fixed;right:20px;bottom:20px;width:360px;background:#1E1C1A;color:#F3EFE8;border-radius:14px;padding:16px 18px;box-shadow:0 10px 30px rgba(0,0,0,.25);z-index:20;display:none}
+.demo .st{font-size:11px;color:#C9B28A;letter-spacing:.12em;text-transform:uppercase}.demo h4{margin:6px 0 6px;font-size:16px}.demo p{margin:0 0 12px;font-size:13px;color:#D6D0C6}
+.demo .dots{display:flex;gap:6px;margin-bottom:10px}.demo .dots i{flex:1;height:4px;border-radius:2px;background:#4A443D}.demo .dots i.on{background:#C9B28A}
+.demo .row{display:flex;gap:8px;justify-content:flex-end}.demo .btn.ghost{background:transparent;color:#F3EFE8;border-color:#5A534B}
+.hl{outline:3px solid var(--sand);outline-offset:3px;border-radius:12px;transition:outline .2s}
+.sec{margin-top:16px}
+.legend{display:flex;gap:14px;font-size:12px;color:var(--muted);flex-wrap:wrap}.legend i{display:inline-block;width:12px;height:3px;vertical-align:middle;margin-right:5px}
+.pill{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:1px 8px;font-size:11.5px;color:var(--muted)}
+.linkish{color:var(--sea);cursor:pointer;text-decoration:underline dotted}
+@media (max-width:1100px){.g4,.g5,.tiles{grid-template-columns:repeat(2,minmax(0,1fr))}.g3{grid-template-columns:1fr}.chat{grid-template-columns:1fr;height:auto}}
+@media (max-width:760px){.app{grid-template-columns:1fr}aside{position:relative;height:auto}.g2{grid-template-columns:1fr}main{padding:0 14px 60px}}
+.grid>*{min-width:0}
+</style></head>
+<body><div class="app"><aside><div class="brand">MOUNTAIN SPA<small>SEA SPA</small></div><div class="assist">Помощник по складу и закупкам</div><nav id="nav"></nav>
+<div class="side-foot">Демонстрационный прототип MVP.<br>Данные синтетические, расчёт на 01.10.2026.<br>Филиалы: Роза Хутор, Сириус, Адлер.</div></aside>
+<main><div class="top" id="top"></div><div id="view"></div></main></div><div class="demo" id="demo"></div>
+<script>// ===== Демо-датасет (синтетические данные) =====
+const TODAY = new Date(2026, 9, 1); // 01.10.2026
+const DAY = 86400000;
+const MONTHS = [ // горизонт планирования: окт 2026 — сен 2027
+  {y:2026,m:9},{y:2026,m:10},{y:2026,m:11},{y:2027,m:0},{y:2027,m:1},{y:2027,m:2},
+  {y:2027,m:3},{y:2027,m:4},{y:2027,m:5},{y:2027,m:6},{y:2027,m:7},{y:2027,m:8}];
+const MNAME = ['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
+const monthDays = (y,m) => new Date(y, m+1, 0).getDate();
+
+const BRANCHES = [
+  {id:'rh', name:'Роза Хутор', line:'Mountain SPA'},
+  {id:'sr', name:'Сириус',     line:'Sea SPA'},
+  {id:'ad', name:'Адлер',      line:'Sea SPA'},
+];
+const SERVICES = [
+  {id:'m60',   name:'Массажный ритуал 60 мин',  price:5500, share:1.00},
+  {id:'sport', name:'Спортивный массаж 90 мин', price:7000, share:0.25},
+  {id:'wrap',  name:'Обёртывание водорослями',  price:4800, share:0.20},
+  {id:'cedar', name:'Кедровая бочка',           price:2500, share:0.30},
+  {id:'face',  name:'Уход за лицом',            price:6000, share:0.20},
+  {id:'hand',  name:'Экспресс-уход за руками',  price:1800, share:0.15},
+];
+// Плановая загрузка: массажные ритуалы 60 мин по месяцам окт..сен (прочие услуги — через долю share)
+// Роза Хутор — горный курорт (пик зимой), Сириус/Адлер — море (пик летом)
+const LOAD_M60 = {
+  rh: [1200,1000,1400,1500,1300,1100,1000,1100,1300,1600,1700,1300],
+  sr: [ 900, 700, 900, 800, 700, 800,1000,1300,1600,2000,2100,1500],
+  ad: [ 720, 560, 720, 640, 560, 640, 800,1040,1280,1600,1680,1200],
+};
+// III квартал 2026 (июл–сен), факт — для сравнения бюджета
+const LOAD_M60_PREV = { rh:[1600,1700,1300], sr:[2000,2100,1500], ad:[1600,1680,1200] };
+
+const CATS = ['Массажные масла и кремы','Ароматерапия и травы','Обёртывания и скрабы','Уход за лицом и руками','Расходные материалы'];
+const PRODUCTS = [
+ {sku:'MO-01',name:'Масло массажное нейтральное',cat:0,unit:'л',pack:12,packName:'коробка 12 л',price:1850,prev:1700,supplier:'ООО «Арома-Юг»',lead:14,ss:10,shelf:730,norms:{m60:0.030}},
+ {sku:'CR-02',name:'Крем для спортивного массажа',cat:0,unit:'кг',pack:6,packName:'коробка 6 кг',price:2400,prev:2350,supplier:'ООО «СпортКосметик»',lead:10,ss:10,shelf:540,norms:{sport:0.025}},
+ {sku:'OL-14',name:'Масло кокосовое (снятый ритуал)',cat:0,unit:'л',pack:6,packName:'коробка 6 л',price:1300,prev:1300,supplier:'ООО «Арома-Юг»',lead:14,ss:10,shelf:540,norms:{}},
+ {sku:'AR-03',name:'Эфирное масло лаванды 10 мл',cat:1,unit:'фл',pack:10,packName:'упаковка 10 фл',price:690,prev:560,supplier:'ООО «Арома-Юг»',lead:14,ss:10,shelf:900,norms:{m60:0.02}},
+ {sku:'CD-06',cycle:1,name:'Травяной сбор для кедровой бочки',cat:1,unit:'кг',pack:10,packName:'мешок 10 кг',price:980,prev:950,supplier:'ИП «Горные травы»',lead:7,ss:7,shelf:180,norms:{cedar:0.05}},
+ {sku:'WR-04',name:'Водоросли ламинарии для обёртывания',cat:2,unit:'кг',pack:5,packName:'упаковка 5 кг',price:3200,prev:2900,supplier:'ООО «Морские ресурсы»',lead:21,ss:14,shelf:365,norms:{wrap:0.10}},
+ {sku:'SC-05',name:'Скраб солевой',cat:2,unit:'кг',pack:5,packName:'ведро 5 кг',price:1450,prev:1400,supplier:'ООО «Морские ресурсы»',lead:21,ss:14,shelf:240,norms:{wrap:0.08}},
+ {sku:'DS-12',cycle:1,name:'Плёнка для обёртывания',cat:2,unit:'рул',pack:6,packName:'коробка 6 рул',price:890,prev:870,supplier:'ООО «ЮгРасходник»',lead:5,ss:7,shelf:3650,norms:{wrap:0.02}},
+ {sku:'FC-07',cycle:1,name:'Маска тканевая с гиалуроновой кислотой',cat:3,unit:'шт',pack:50,packName:'коробка 50 шт',price:240,prev:230,supplier:'ООО «Космо Про»',lead:14,ss:10,shelf:540,norms:{face:1}},
+ {sku:'FC-08',name:'Сыворотка для лица 30 мл',cat:3,unit:'фл',pack:12,packName:'коробка 12 фл',price:1650,prev:1600,supplier:'ООО «Космо Про»',lead:14,ss:10,shelf:365,norms:{face:0.1}},
+ {sku:'MS-13',name:'Маска с голубой глиной (новинка)',cat:3,unit:'кг',pack:5,packName:'упаковка 5 кг',price:null,prev:null,supplier:'— не выбран —',lead:null,ss:10,shelf:365,norms:{face:0.03}},
+ {sku:'HN-09',name:'Крем для рук 250 мл',cat:3,unit:'шт',pack:20,packName:'коробка 20 шт',price:520,prev:500,supplier:'ООО «Космо Про»',lead:14,ss:10,shelf:730,norms:{hand:0.05}},
+ {sku:'DS-10',cycle:1,name:'Простыни одноразовые',cat:4,unit:'шт',pack:200,packName:'упаковка 200 шт',price:14,prev:13,supplier:'ООО «ЮгРасходник»',lead:5,ss:7,shelf:3650,norms:{m60:1,sport:1,wrap:1,face:1}},
+ {sku:'DS-11',cycle:1,name:'Полотенца одноразовые',cat:4,unit:'шт',pack:500,packName:'коробка 500 шт',price:9,prev:9,supplier:'ООО «ЮгРасходник»',lead:5,ss:7,shelf:3650,norms:{m60:2,sport:2,wrap:2,cedar:2,face:1}},
+];
+const P = Object.fromEntries(PRODUCTS.map(p=>[p.sku,p]));
+
+// Остатки, партии, открытые заказы, фактический расход — задаются через «покрытие в днях»
+// и явные контрольные сценарии. cover = на сколько дней хватит текущего остатка.
+const d = (s)=>{const [dd,mm,yy]=s.split('.').map(Number);return new Date(yy,mm-1,dd);};
+const SEED = {
+ rh: {
+  'MO-01':{batches:[{id:'А-0712',qty:10,exp:'15.11.2026'},{id:'Б-0903',qty:15,exp:'30.06.2027'}],open:[{qty:20,date:'10.10.2026',no:'ЗК-1182',st:'подтверждён'}],k:1.05,last:1},
+  'AR-03':{cover:8,k:1.02},
+  'WR-04':{batches:[{id:'Л-0405',qty:14,exp:'10.11.2026'},{id:'Л-0820',qty:6,exp:'20.08.2027'}],k:0.98},
+  'CD-06':{cover:160,k:1.0,expShift:45},
+  'OL-14':{fixed:18,last:95,exp:'30.04.2027'},
+  'MS-13':{fixed:2,last:3,exp:'01.06.2027'},
+  'FC-07':{cover:40},'FC-08':{cover:45},'CR-02':{cover:35},'SC-05':{cover:50},'DS-12':{cover:40},'HN-09':{cover:42},'DS-10':{cover:30},'DS-11':{cover:28},
+ },
+ sr: {
+  'CR-02':{cover:6,k:1.04},
+  'SC-05':{batches:[{id:'С-0311',qty:9,exp:'12.11.2026'},{id:'С-0710',qty:8,exp:'15.03.2027'}]},
+  'DS-10':{cover:5},
+  'CD-06':{cover:30,sharp:1.45},
+  'FC-07':{cover:150},
+  'MO-01':{cover:34,k:1.03},'AR-03':{cover:40},'WR-04':{cover:45},'FC-08':{cover:38},'HN-09':{cover:36},'DS-11':{cover:25},'DS-12':{cover:35},
+  'OL-14':{fixed:0,last:200},'MS-13':{fixed:0,last:0},
+ },
+ ad: {
+  'WR-04':{cover:9,k:1.01},
+  'FC-08':{batches:[{id:'Ф-0214',qty:6,exp:'05.11.2026'},{id:'Ф-0730',qty:10,exp:'30.07.2027'}]},
+  'HN-09':{cover:140},
+  'DS-11':{cover:4},
+  'MO-01':{cover:38,k:1.0},'CR-02':{cover:40},'AR-03':{cover:36},'CD-06':{cover:28,sharp:0.62},'SC-05':{cover:44},'FC-07':{cover:35},'DS-10':{cover:32},'DS-12':{cover:40},
+  'OL-14':{fixed:0,last:200},'MS-13':{fixed:0,last:0},
+ },
+};
+// Заранее заложенные контрольные сценарии (для метрики «≥ 90% выявлено»)
+const CONTROL = [
+ ['deficit','rh','AR-03'],['deficit','sr','CR-02'],['deficit','sr','DS-10'],['deficit','ad','WR-04'],['deficit','ad','DS-11'],
+ ['excess','rh','CD-06'],['excess','rh','OL-14'],['excess','sr','FC-07'],['excess','ad','HN-09'],
+ ['expiry','rh','WR-04'],['expiry','rh','CD-06'],['expiry','sr','SC-05'],['expiry','ad','FC-08'],
+ ['nomove','rh','OL-14'],['price','all','AR-03'],['price','all','WR-04'],['sharp','sr','CD-06'],['sharp','ad','CD-06'],['nodata','rh','MS-13'],
+];
+
+// ===== Расчётное ядро (детерминированные функции) =====
+const round1 = x => Math.round(x*10)/10;
+const addDays = (dt,n) => new Date(dt.getTime()+n*DAY);
+const diffDays = (a,b) => Math.round((a-b)/DAY);
+const fmtD = dt => dt.toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit',year:'numeric'});
+
+function procedures(branch, svc, mi, adj){ // mi — индекс месяца горизонта
+  const s = SERVICES.find(x=>x.id===svc);
+  let v = LOAD_M60[branch][mi]*s.share;
+  if (adj) v *= 1 + ((adj.all||0) + (adj[mi]||0))/100;
+  return v;
+}
+function kFact(branch,sku){ return (SEED[branch][sku]&&SEED[branch][sku].k)||1; }
+function monthForecast(branch, sku, mi, adj){
+  const p=P[sku]; let q=0;
+  for (const [svc,n] of Object.entries(p.norms)) q += procedures(branch,svc,mi,adj)*n;
+  return q*kFact(branch,sku);
+}
+function prevQuarterForecast(branch, sku){
+  const p=P[sku]; let q=0;
+  for (const [svc,n] of Object.entries(p.norms)){
+    const s=SERVICES.find(x=>x.id===svc);
+    q += LOAD_M60_PREV[branch].reduce((a,b)=>a+b,0)*s.share*n;
+  }
+  return q*kFact(branch,sku);
+}
+// Строим склад: партии, открытые заказы, факт расхода
+const STOCK = {};
+(function build(){
+  for (const b of BRANCHES){
+    STOCK[b.id]={};
+    for (const p of PRODUCTS){
+      const s = SEED[b.id][p.sku]||{cover:35};
+      const daily = [0,1,2].reduce((a,mi)=>a+monthForecast(b.id,p.sku,mi),0)/92;
+      let batches=[];
+      if (s.batches) batches = s.batches.map(x=>({id:x.id,qty:x.qty,exp:d(x.exp)}));
+      else if (s.fixed!==undefined){ if (s.fixed>0) batches=[{id:p.sku.slice(0,2)+'-'+(1100+s.fixed),qty:s.fixed,exp:d(s.exp)}]; }
+      else {
+        let qty = daily*s.cover; qty = p.unit==='шт'?Math.round(qty):round1(qty);
+        const q1 = p.unit==='шт'?Math.round(qty*0.4):round1(qty*0.4);
+        const h=[...(p.sku+b.id)].reduce((a,c)=>a+c.charCodeAt(0),0); const e1 = addDays(TODAY, s.expShift!==undefined? s.expShift : Math.min(p.shelf-60, 130 + (h*37)%170));
+        const e2 = addDays(TODAY, Math.max(p.shelf-30, 120));
+        batches=[{id:p.sku.slice(0,2)+'-'+(700+q1%97|0),qty:q1,exp:e1},{id:p.sku.slice(0,2)+'-'+(900+(qty-q1)%89|0),qty:round1(qty-q1),exp:e2}];
+        if (p.unit==='шт') batches[1].qty=Math.round(qty-q1);
+      }
+      const open=(s.open||[]).map(o=>({...o,date:d(o.date)}));
+      const f90 = prevQuarterForecast(b.id,p.sku);                 // факт за 90 дней (июл–сен)
+      const f30 = (f90/3)*(s.sharp||1);                          // факт за последние 30 дней
+      STOCK[b.id][p.sku]={batches,open,fact90:f90,fact30:f30,lastMove:s.last!==undefined?s.last:1};
+    }
+  }
+})();
+
+function available(branch, sku){
+  return STOCK[branch][sku].batches.filter(x=>x.exp>=TODAY).reduce((a,x)=>a+x.qty,0);
+}
+const PERIODS = {month:{n:1,chunks:[1],label:'месяц',title:'Октябрь 2026'},quarter:{n:3,chunks:[3],label:'квартал',title:'IV квартал 2026'},
+  half:{n:6,chunks:[3,3],label:'полугодие',title:'Октябрь 2026 — март 2027'},year:{n:12,chunks:[3,3,3,3],label:'год',title:'Октябрь 2026 — сентябрь 2027'}};
+
+// Главная функция: рекомендация закупки по позиции и филиалу на горизонт
+function calcPurchase(branch, sku, period='quarter', opt={}){
+  const p=P[sku], st=STOCK[branch][sku], per=PERIODS[period];
+  const ssDays = opt.ssDays!==undefined? opt.ssDays : p.ss;
+  const avail = available(branch,sku);
+  const res = {branch,sku,period,ssDays,avail,orders:[],chunks:[],warnings:[],nodata:[]};
+  if (p.price==null) res.nodata.push('цена поставщика'); if (p.lead==null) res.nodata.push('срок поставки');
+  let stock = avail, mi=0, start=new Date(TODAY);
+  const openAll = st.open.slice();
+  res.forecastMonths=[];
+  const cyc = Math.min(p.cycle||3, per.n); const chunkList=[]; for(let k=0;k<per.n;k+=cyc) chunkList.push(Math.min(cyc,per.n-k));
+  res.cycle=cyc;
+  for (const len of chunkList){
+    let F=0, D=0; const months=[];
+    for (let i=0;i<len;i++,mi++){ const M=MONTHS[mi]; const f=monthForecast(branch,sku,mi,opt.adj); F+=f; D+=monthDays(M.y,M.m); months.push({mi,f}); res.forecastMonths.push({mi,f}); }
+    const end = addDays(start,D);
+    const daily = F/D, ss = ssDays*daily, lead=p.lead||0, rop = daily*lead+ss;
+    const arr = openAll.filter(o=>o.date<end); arr.forEach(o=>openAll.splice(openAll.indexOf(o),1));
+    const arrQty = arr.reduce((a,o)=>a+o.qty,0);
+    const need = F + ss - stock - arrQty;
+    let qty=0; if (need>0 && daily>0) qty = Math.max(p.pack, Math.ceil(need/p.pack-1e-9)*p.pack);
+    let dateOff = daily>0? (stock+arrQty-rop)/daily : Infinity;
+    let date=null, urgent=false;
+    if (qty>0){ const first=start.getTime()===TODAY.getTime(); date = addDays(start, first? Math.max(0,Math.floor(dateOff)) : Math.floor(dateOff)); if (date<TODAY){date=new Date(TODAY);} if (dateOff<0 && first) urgent=true; }
+    const maxUse = daily*((p.shelf||9999)-lead);
+    const split = qty>0 && qty>maxUse;
+    const endStock = stock+arrQty+qty-F;
+    res.chunks.push({start,end,D,F,daily,ss,rop,arr,arrQty,need,qty,date,urgent,split,stockStart:stock,endStock,months,dateOff});
+    if (qty>0) res.orders.push({qty,date,cost:p.price!=null?qty*p.price:null,urgent,split});
+    stock=endStock; start=end;
+  }
+  const c0=res.chunks[0];
+  res.F = res.chunks.reduce((a,c)=>a+c.F,0); res.qty = res.orders.reduce((a,o)=>a+o.qty,0);
+  res.cost = p.price!=null? res.qty*p.price : null;
+  res.daily=c0.daily; res.ss=c0.ss; res.rop=c0.rop; res.open=st.open;
+  res.openQty = st.open.reduce((a,o)=>a+o.qty,0);
+  res.endNoBuy = avail + res.openQty - res.F; res.endStock = res.chunks[res.chunks.length-1].endStock;
+  res.firstDate = res.orders.length? res.orders[0].date : null;
+  return res;
+}
+
+// FEFO: какие партии успеем израсходовать
+function fefo(branch, sku){
+  const st=STOCK[branch][sku]; const r=calcPurchase(branch,sku,'year');
+  const daily = r.forecastMonths.reduce((a,x)=>a+x.f,0)/365;
+  let cum=0; const out=[];
+  for (const b of st.batches.slice().sort((a,b)=>a.exp-b.exp)){
+    const days = diffDays(b.exp,TODAY);
+    const startDay = daily>0? cum/daily : Infinity; cum+=b.qty;
+    const usable = daily>0? Math.max(0, Math.min(b.qty, daily*days - (cum-b.qty))) : 0;
+    const risk = Math.max(0, b.qty-usable);
+    out.push({...b,days,risk:(P[sku].unit==='шт'?Math.round(risk):round1(risk)),consumeBy: daily>0? addDays(TODAY,Math.ceil(cum/daily)):null, startDay});
+  }
+  return out;
+}
+
+// Предупреждения
+const WTYPES = {
+  deficit:{name:'Риск дефицита',cls:'red'}, order14:{name:'Заказать в ближайшие 14 дней',cls:'amber'}, low:{name:'Ниже страхового запаса',cls:'amber'},
+  excess:{name:'Избыточный запас',cls:'blue'}, nomove:{name:'Нет движения',cls:'grey'}, expiry:{name:'Срок годности',cls:'red'},
+  sharp:{name:'Резкое изменение расхода',cls:'violet'}, price:{name:'Рост закупочной цены',cls:'violet'}, nodata:{name:'Недостаточно данных',cls:'grey'} };
+function warnings(branch){
+  const out=[];
+  for (const p of PRODUCTS){
+    const r=calcPurchase(branch,p.sku,'quarter'); const st=STOCK[branch][p.sku];
+    const avail=r.avail;
+    if (r.nodata.length){ if (r.F>0) out.push({t:'nodata',branch,sku:p.sku,text:`Нет данных: ${r.nodata.join(', ')}. Расчёт закупки не выполняется`}); continue; }
+    if (r.daily>0){
+      const lead=p.lead; const openLead=st.open.filter(o=>o.date<=addDays(TODAY,lead)).reduce((a,o)=>a+o.qty,0);
+      const cover=(avail+openLead)/r.daily;
+      if (cover<lead) out.push({t:'deficit',branch,sku:p.sku,text:`Остатка хватит на ${Math.floor(cover)} дн. (до ${fmtD(addDays(TODAY,Math.floor(cover)))}), поставка при заказе сегодня — ${fmtD(addDays(TODAY,lead))}`,sev:3});
+      else if (r.firstDate && diffDays(r.firstDate,TODAY)<=14) out.push({t:'order14',branch,sku:p.sku,text:`${r.orders[0].urgent?'Заказать сегодня':'Заказать до '+fmtD(r.firstDate)}: ${fmtQ(r.orders[0].qty,p)} на ${fmtR(r.orders[0].cost)}`,sev:2});
+      if (avail<r.ss && cover>=lead) out.push({t:'low',branch,sku:p.sku,text:`Остаток ${fmtQ(avail,p)} ниже страхового запаса ${fmtQ(r.ss,p)}`,sev:2});
+      const coverAll=(avail+r.openQty)/r.daily;
+      if (coverAll>120) out.push({t:'excess',branch,sku:p.sku,text:`Запаса хватит на ${Math.round(coverAll)} дн. при норме до 120. Заморожено ${fmtR(avail*p.price)}`,sev:1});
+      const avg=st.fact90/3, ch=st.fact30/avg-1;
+      if (Math.abs(ch)>0.3) out.push({t:'sharp',branch,sku:p.sku,text:`Расход за 30 дн. ${ch>0?'вырос':'снизился'} на ${Math.abs(Math.round(ch*100))}% к среднему за 90 дн. Проверьте норму расхода и загрузку`,sev:1});
+    } else if (avail>0){
+      out.push({t:'excess',branch,sku:p.sku,text:`Позиция не используется в текущих услугах, остаток ${fmtQ(avail,p)} на ${fmtR(avail*p.price)}`,sev:1});
+    }
+    if (st.lastMove>60 && avail>0) out.push({t:'nomove',branch,sku:p.sku,text:`Нет движения ${st.lastMove} дн. Остаток ${fmtQ(avail,p)}`,sev:1});
+    for (const b of fefo(branch,p.sku)){
+      if (b.days<0) continue;
+      if (b.risk>0) out.push({t:'expiry',branch,sku:p.sku,text:`Партия ${b.id}: срок до ${fmtD(b.exp)}, не успеем израсходовать ${fmtQ(b.risk,p)} (${fmtR(b.risk*p.price)})`,sev:3});
+      else if (b.days<=60) out.push({t:'expiry',branch,sku:p.sku,text:`Партия ${b.id}: срок до ${fmtD(b.exp)} (${b.days} дн.), по FEFO расходуется первой`,sev:1});
+    }
+  }
+  return out;
+}
+function priceWarnings(){
+  return PRODUCTS.filter(p=>p.price!=null && p.price/p.prev-1>0.1).map(p=>({t:'price',branch:'all',sku:p.sku,text:`${p.supplier}: ${fmtR(p.prev)} → ${fmtR(p.price)} за ${p.unit} (+${fmtPct(p.price/p.prev-1)})`,sev:2}));
+}
+function allWarnings(branch){
+  const bs = branch==='all'? BRANCHES.map(b=>b.id) : [branch];
+  return bs.flatMap(warnings).concat(priceWarnings());
+}
+
+// План и бюджет
+function plan(branch, period, cat, opt={}){
+  const bs = branch==='all'? BRANCHES.map(b=>b.id) : [branch];
+  const per=PERIODS[period]; const rows=[];
+  for (const b of bs) for (const p of PRODUCTS){
+    if (cat!=='all' && p.cat!=+cat) continue;
+    const r=calcPurchase(b,p.sku,period,opt);
+    rows.push({b,p,r});
+  }
+  const months = MONTHS.slice(0,per.n).map((M,i)=>({i,label:MNAME[M.m]+' '+String(M.y).slice(2),y:M.y,m:M.m,sum:0}));
+  const byCat={}, byBranch={}; let total=0;
+  for (const x of rows){
+    for (const o of x.r.orders){ if (o.cost==null) continue;
+      const mi = months.findIndex(M=>M.y===o.date.getFullYear()&&M.m===o.date.getMonth());
+      if (mi>=0) months[mi].sum+=o.cost; total+=o.cost;
+      byCat[x.p.cat]=(byCat[x.p.cat]||0)+o.cost; byBranch[x.b]=(byBranch[x.b]||0)+o.cost; }
+  }
+  return {rows,months,byCat,byBranch,total,per,bs};
+}
+// Сравнение с III кварталом 2026 и разложение на факторы (только для квартала)
+const PREV_BUY_SHARE = 0.85; // в III кв. закупили 85% от расхода — запасы снижались
+const PRICE_HIST_K=[0.95,0.97,0.99,1]; // IV кв.25, I кв.26, II кв.26, III кв.26 (к цене prev)
+const QLABELS=['IV кв. 2025','I кв. 2026','II кв. 2026','III кв. 2026','IV кв. 2026'];
+function priceAt(p,qi){ return qi===4? p.price : p.prev*PRICE_HIST_K[qi]; }
+const YOY_LOAD=0.92; // загрузка IV кв. 2025 была на 8% ниже плановой
+function factors(branch, cat, base='yoy'){
+  const bs = branch==='all'? BRANCHES.map(b=>b.id) : [branch];
+  let B0=0,B1=0,demand=0,price=0,stockfx=0;
+  for (const b of bs) for (const p of PRODUCTS){
+    if (p.price==null) continue; if (cat!=='all' && p.cat!=+cat) continue;
+    const r=calcPurchase(b,p.sku,'quarter'); const Q1=r.qty, P1=p.price, F1=r.F;
+    if (!Object.keys(p.norms).length) continue;
+    let F0,Q0,P0;
+    if (base==='yoy'){ F0=F1*YOY_LOAD; Q0=Math.ceil(F0/p.pack)*p.pack; P0=priceAt(p,0); }
+    else { F0=prevQuarterForecast(b,p.sku); Q0=Math.ceil(F0*PREV_BUY_SHARE/p.pack)*p.pack; P0=p.prev; }
+    B0+=Q0*P0; B1+=Q1*P1;
+    demand += (F1-F0)*P0;
+    stockfx += ((Q1-F1)-(Q0-F0))*P0;
+    price += (P1-P0)*Q1;
+  }
+  return {B0,B1,demand,price,stockfx,delta:B1-B0};
+}
+const LIMITS = {rh:850000, sr:650000, ad:650000}; // лимиты закупок на квартал
+
+// Перемещения излишков между филиалами (снижают закупку и риск списания)
+function transfers(){
+  const out=[];
+  for (const p of PRODUCTS){ if (p.price==null) continue;
+    const info=BRANCHES.map(b=>{const r=calcPurchase(b.id,p.sku,'quarter');const surplus=r.daily>0? r.avail-r.daily*90 : 0;return {b:b.id,r,surplus};});
+    for (const from of info) if (from.surplus>0 && from.r.avail/from.r.daily>120)
+      for (const to of info) if (to.b!==from.b && to.r.qty>0){
+        let q=Math.min(from.surplus,to.r.qty); q=p.unit==='шт'?Math.floor(q):Math.floor(q*10)/10; if (q<=0) continue;
+        out.push({sku:p.sku,from:from.b,to:to.b,qty:q,save:q*p.price}); from.surplus-=q; }
+  }
+  return out;
+}
+// Себестоимость услуг
+function serviceCost(branch, svcId, priceOverride={}){
+  let now=0, base=0; const lines=[];
+  for (const p of PRODUCTS){ const n=p.norms[svcId]; if (!n || p.price==null) continue;
+    const q=n*kFact(branch,p.sku); const pn=priceOverride[p.sku]!==undefined?priceOverride[p.sku]:p.price;
+    lines.push({p,q,now:q*pn,base:q*p.prev}); now+=q*pn; base+=q*p.prev; }
+  return {now,base,lines};
+}
+
+// Форматирование
+function fmtN(x,dig=1){ return (Math.round(x*10**dig)/10**dig).toLocaleString('ru-RU',{maximumFractionDigits:dig}); }
+function fmtQ(x,p){ return (p.unit==='шт'? Math.round(x).toLocaleString('ru-RU') : fmtN(x)) + ' ' + p.unit; }
+function fmtR(x){ return x==null?'—':Math.round(x).toLocaleString('ru-RU')+' ₽'; }
+function fmtPct(x,dig=1){ return fmtN(x*100,dig)+'%'; }
+// ===== Состояние и утилиты интерфейса =====
+const S = {view:'dash', branch:'all', period:'quarter', cat:'all', wf:null,
+  calc:{branch:'rh', sku:'MO-01', period:'quarter', load:0, ss:null},
+  limit:{}, base:'yoy', priceBase:3, svcBranch:'rh', whatif:{sku:'MO-01', price:2000},
+  journal:[
+    {ts:'01.07.2026 10:14', who:'Управляющий, Роза Хутор', scope:'Роза Хутор · III кв. 2026', total:812400, limit:850000, st:'Утверждён', note:'Плановый цикл'},
+    {ts:'02.07.2026 16:40', who:'Управляющий, Сириус', scope:'Сириус · III кв. 2026', total:1398200, limit:1450000, st:'Утверждён', note:'Высокий сезон, лимит повышен'},
+  ], chat:[] };
+const $ = s => document.querySelector(s);
+const bname = id => id==='all'?'Все филиалы':BRANCHES.find(b=>b.id===id).name;
+const scopeB = () => S.branch==='all'? BRANCHES.map(b=>b.id) : [S.branch];
+const esc = s => String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+function limitFor(branch, period){
+  const k=PERIODS[period].n/3; const base = branch==='all'? Object.values(LIMITS).reduce((a,b)=>a+b,0) : LIMITS[branch];
+  const key=branch+'|'+period; return S.limit[key]!==undefined? S.limit[key] : Math.round(base*k/1000)*1000;
+}
+function chip(t){ const w=WTYPES[t]; return `<span class="chip ${w.cls}">${w.name}</span>`; }
+function pname(sku){ return P[sku].name; }
+function toast(msg){ const t=document.createElement('div'); t.className='notice green'; t.style.cssText='position:fixed;left:50%;top:18px;transform:translateX(-50%);z-index:50;box-shadow:0 6px 20px rgba(0,0,0,.15)'; t.innerHTML=msg; document.body.appendChild(t); setTimeout(()=>t.remove(),2600); }
+
+const VIEWS = {
+  dash:{t:'Состояние склада',ic:'◧'}, calc:{t:'Расчёт закупки',ic:'∑'}, plan:{t:'План закупок и бюджет',ic:'▤'},
+  expiry:{t:'Сроки годности (FEFO)',ic:'◷'}, prices:{t:'Цены и себестоимость',ic:'₽'}, chat:{t:'AI-помощник',ic:'✦'}, journal:{t:'Журнал решений',ic:'☰'} };
+
+function renderNav(){
+  $('#nav').innerHTML = Object.entries(VIEWS).map(([k,v])=>`<a class="${S.view===k?'on':''}" onclick="go('${k}')"><span class="ic">${v.ic}</span>${v.t}</a>`).join('');
+}
+function renderTop(){
+  const showFilters = ['dash','plan','expiry'].includes(S.view);
+  $('#top').innerHTML = `<h1>${VIEWS[S.view].t}</h1>` + (showFilters? `
+   <select onchange="S.branch=this.value;render()">${['all',...BRANCHES.map(b=>b.id)].map(id=>`<option value="${id}" ${S.branch===id?'selected':''}>${bname(id)}${id!=='all'?' · '+BRANCHES.find(b=>b.id===id).line:''}</option>`).join('')}</select>
+   <select onchange="S.period=this.value;render()">${Object.entries(PERIODS).map(([k,v])=>`<option value="${k}" ${S.period===k?'selected':''}>${v.label[0].toUpperCase()+v.label.slice(1)}: ${v.title}</option>`).join('')}</select>
+   <select onchange="S.cat=this.value;render()"><option value="all">Все категории</option>${CATS.map((c,i)=>`<option value="${i}" ${S.cat==i?'selected':''}>${c}</option>`).join('')}</select>` : '') +
+   `<span class="asof">Данные актуальны на ${fmtD(TODAY)} 08:00</span><button class="btn sand" onclick="demoStart()">▶ Демо-сценарий</button>`;
+}
+function go(v){ S.view=v; render(); window.scrollTo(0,0); }
+function render(){ renderNav(); renderTop(); ({dash:renderDash,calc:renderCalc,plan:renderPlan,expiry:renderExpiry,prices:renderPrices,chat:renderChat,journal:renderJournal})[S.view](); }
+function openCalc(b,sku){ S.calc.branch=b; S.calc.sku=sku; go('calc'); }
+
+// ===== Экран 1. Состояние склада =====
+function renderDash(){
+  const bs=scopeB(); const W=allWarnings(S.branch).filter(w=>S.cat==='all'||P[w.sku].cat==+S.cat);
+  let stockV=0, riskV=0; for (const b of bs) for (const p of PRODUCTS){ if (S.cat!=='all'&&p.cat!=+S.cat) continue; if (p.price!=null) stockV+=available(b,p.sku)*p.price; }
+  const exp=W.filter(w=>w.t==='expiry'); for (const b of bs) for (const p of PRODUCTS) if (p.price) for (const x of fefo(b,p.sku)) if (x.days>=0) riskV+=x.risk*p.price;
+  const soon=W.filter(w=>w.t==='deficit'||w.t==='order14');
+  let soonSum=0; for (const w of soon){ const r=calcPurchase(w.branch,w.sku,'quarter'); if (r.cost) soonSum+=r.orders[0].cost; }
+  const pl=plan(S.branch,S.period,S.cat); const lim=limitFor(S.branch,S.period); const pct=pl.total/lim;
+  const counts={}; W.forEach(w=>counts[w.t]=(counts[w.t]||0)+1);
+  if (!S.wf) S.wf=new Set(Object.keys(WTYPES));
+  const listAll=W.filter(w=>S.wf.has(w.t)).sort((a,b)=>(b.sev||0)-(a.sev||0)); const list=S.wAll?listAll:listAll.slice(0,12);
+  const Wall=allWarnings('all'); let found=0; const ctl={};
+  for (const [t,b,s] of CONTROL){ const ok=Wall.some(x=>x.t===t&&x.sku===s&&(b==='all'||x.branch===b)); ctl[t]=ctl[t]||[0,0]; ctl[t][1]++; if(ok){found++;ctl[t][0]++;} }
+  $('#view').innerHTML = `
+  <div class="grid g5" id="kpis">
+    <div class="card kpi"><div class="l">Запас на складе</div><div class="v">${fmtR(stockV)}</div><div class="s">${bs.length>1?'3 филиала':bname(S.branch)}, по закупочным ценам</div></div>
+    <div class="card kpi ${soon.length?'alert':''}"><div class="l">Заказать в ближайшие 14 дней</div><div class="v">${soon.length} поз.</div><div class="s">на ${fmtR(soonSum)}</div></div>
+    <div class="card kpi ${counts.deficit?'alert':''}"><div class="l">Риск дефицита</div><div class="v">${counts.deficit||0} поз.</div><div class="s">закончатся раньше поставки</div></div>
+    <div class="card kpi"><div class="l">Партии со сроком годности под риском</div><div class="v">${exp.length}</div><div class="s">риск списания ${fmtR(riskV)}</div></div>
+    <div class="card kpi ${pct>1?'alert':''}"><div class="l">Бюджет: ${PERIODS[S.period].title}</div><div class="v">${fmtR(pl.total)}</div><div class="bar ${pct>1?'over':''}" style="margin-top:6px"><i style="width:${Math.min(100,pct*100)}%"></i></div><div class="s">${fmtPct(pct,0)} от лимита ${fmtR(lim)}</div></div>
+  </div>
+  <div class="grid" style="grid-template-columns:2fr 1fr;margin-top:16px">
+    <div class="card" id="warns"><h3>Предупреждения <span class="muted small">· ${listAll.length} из ${W.length}</span></h3>
+      <div class="filters">${Object.keys(WTYPES).filter(t=>counts[t]).map(t=>`<span class="chip ${WTYPES[t].cls} ${S.wf.has(t)?'':'off'}" onclick="toggleWF('${t}')">${WTYPES[t].name} · ${counts[t]}</span>`).join('')}</div>
+      ${list.map(w=>`<div class="wl" onclick="${w.t==='price'?"go('prices')":w.t==='expiry'?"go('expiry')":`openCalc('${w.branch==='all'?'rh':w.branch}','${w.sku}')`}">${chip(w.t)}<div class="t"><b>${pname(w.sku)}</b> <span class="br">· ${w.branch==='all'?'все филиалы':bname(w.branch)}</span><div class="small">${w.text}</div></div><span class="muted">›</span></div>`).join('') || '<div class="muted">Нет предупреждений по выбранным фильтрам</div>'}${listAll.length>12?`<div style="margin-top:10px"><span class="linkish" onclick="S.wAll=!S.wAll;renderDash()">${S.wAll?'Свернуть':'Показать все ('+listAll.length+')'}</span></div>`:''}
+    </div>
+    <div>
+      <div class="card"><h3>Бюджет по месяцам</h3>${barsSVG(pl.months.map(m=>({l:m.label,v:m.sum})),lim/pl.months.length)}<div class="legend"><span><i style="background:var(--sea)"></i>закупки по дате заказа</span><span><i style="background:var(--red)"></i>средний лимит в месяц</span></div></div>
+      <div class="card sec"><h3>Контроль выявления рисков</h3>
+        <div class="small muted">Заранее заложенные в датасет сценарии (метрика приёмки: не меньше 90%)</div>
+        <div style="font-size:26px;font-weight:600;margin:6px 0">${found} из ${CONTROL.length} <span class="chip green">${fmtPct(found/CONTROL.length,0)}</span></div>
+        <table>${Object.entries(ctl).map(([t,v])=>`<tr><td>${WTYPES[t].name}</td><td class="n">${v[0]} / ${v[1]}</td></tr>`).join('')}</table>
+      </div>
+      <div class="card sec"><h3>Быстрые действия</h3>
+        <button class="btn ghost" style="width:100%;margin-bottom:6px" onclick="openCalc('rh','MO-01')">Рассчитать закупку масла на квартал</button>
+        <button class="btn ghost" style="width:100%;margin-bottom:6px" onclick="go('plan')">Сформировать план на ${PERIODS[S.period].label}</button>
+        <button class="btn ghost" style="width:100%" onclick="go('chat')">Спросить AI-помощника</button></div>
+    </div>
+  </div>`;
+}
+function toggleWF(t){ S.wf.has(t)?S.wf.delete(t):S.wf.add(t); renderDash(); }
+
+function barsSVG(items, limitLine){
+  const W=Math.max(300,items.length*52), H=150, pad=28; const max=Math.max(...items.map(i=>i.v), limitLine||0)*1.1||1;
+  const bw=(W-pad)/items.length*0.62;
+  let s=`<svg viewBox="0 0 ${W} ${H+22}" width="100%" style="max-height:200px">`;
+  items.forEach((it,i)=>{ const x=pad+(W-pad)/items.length*i+((W-pad)/items.length-bw)/2; const h=it.v/max*H;
+    s+=`<rect x="${x}" y="${H-h}" width="${bw}" height="${h}" rx="3" fill="#1F5C6E"><title>${it.l}: ${fmtR(it.v)}</title></rect>`;
+    s+=`<text x="${x+bw/2}" y="${H+14}" font-size="10.5" text-anchor="middle" fill="#7A736B">${it.l}</text>`;
+    if (it.v>0) s+=`<text x="${x+bw/2}" y="${H-h-4}" font-size="9.5" text-anchor="middle" fill="#1E1C1A">${Math.round(it.v/1000)}к</text>`; });
+  if (limitLine){ const y=H-limitLine/max*H; s+=`<line x1="${pad}" x2="${W}" y1="${y}" y2="${y}" stroke="#B3261E" stroke-dasharray="5 4"/>`; }
+  return s+'</svg>';
+}
+// ===== Экран 2. Расчёт закупки =====
+function renderCalc(){
+  const c=S.calc, p=P[c.sku];
+  const opt={}; if (c.ss!==null && c.ss!=='') opt.ssDays=+c.ss; if (+c.load) opt.adj={all:+c.load};
+  const r=calcPurchase(c.branch,c.sku,c.period,opt);
+  const params=`<div class="card"><div class="params">
+    <label>Филиал<select onchange="S.calc.branch=this.value;renderCalc()">${BRANCHES.map(b=>`<option value="${b.id}" ${c.branch===b.id?'selected':''}>${b.name}</option>`).join('')}</select></label>
+    <label>Товар<select onchange="S.calc.sku=this.value;S.calc.ss=null;renderCalc()">${CATS.map((cn,i)=>`<optgroup label="${cn}">${PRODUCTS.filter(x=>x.cat===i).map(x=>`<option value="${x.sku}" ${c.sku===x.sku?'selected':''}>${x.sku} · ${x.name}</option>`).join('')}</optgroup>`).join('')}</select></label>
+    <label>Горизонт<select onchange="S.calc.period=this.value;renderCalc()">${Object.entries(PERIODS).map(([k,v])=>`<option value="${k}" ${c.period===k?'selected':''}>${v.label} (${v.title})</option>`).join('')}</select></label>
+    <label>Изменение загрузки, %<input type="number" step="5" value="${c.load}" style="width:110px" onchange="S.calc.load=this.value;renderCalc()"></label>
+    <label>Страховой запас, дней<input type="number" min="0" value="${c.ss??p.ss}" style="width:110px" onchange="S.calc.ss=this.value;renderCalc()"></label>
+    <span class="pill">Правило компании: ${p.ss} дн. · срок поставки ${p.lead??'—'} дн. · ${p.packName}</span>
+  </div></div>`;
+  if (r.nodata.length){
+    $('#view').innerHTML = params+`<div class="notice red sec"><b>Недостаточно данных для расчёта.</b> Для «${p.name}» не заполнено: ${r.nodata.join(', ')}. Помощник не подставляет значения сам: заполните справочник поставщиков или выберите поставщика, и расчёт выполнится автоматически.<br><span class="small">Прогноз расхода по плановой загрузке при этом известен: ${fmtQ(r.F,p)} за ${PERIODS[c.period].label}.</span></div>`;
+    return;
+  }
+  const lastChunk=r.chunks[r.chunks.length-1];
+  const status = r.orders.some(o=>o.urgent)? '<span class="chip red">Заказать сегодня</span>' : r.qty>0? (diffDays(r.firstDate,TODAY)<=14?'<span class="chip amber">Заказ в ближайшие 14 дней</span>':'<span class="chip blue">Заказ по плану</span>') : '<span class="chip green">Закупка не требуется</span>';
+  const tiles = `<div class="tiles sec" id="tiles">
+    <div class="tile"><div class="l">Прогноз расхода · ${PERIODS[c.period].label}</div><div class="v">${fmtQ(r.F,p)}</div><div class="small muted">${fmtN(r.daily,2)} ${p.unit} в день</div></div>
+    <div class="tile"><div class="l">Доступный остаток на ${fmtD(TODAY)}</div><div class="v">${fmtQ(r.avail,p)}</div><div class="small muted">+ открытые заказы ${fmtQ(r.openQty,p)}</div></div>
+    <div class="tile"><div class="l">Ожидаемый остаток на конец периода</div><div class="v" style="color:${r.endNoBuy<0?'var(--red)':'inherit'}">${fmtQ(r.endNoBuy,p)}</div><div class="small muted">без закупки · с закупкой ${fmtQ(r.endStock,p)}</div></div>
+    <div class="tile"><div class="l">Страховой запас / точка заказа</div><div class="v">${fmtQ(r.ss,p)}</div><div class="small muted">точка заказа ${fmtQ(r.rop,p)}</div></div>
+    <div class="tile hi"><div class="l">Рекомендуемый объём закупки</div><div class="v">${fmtQ(r.qty,p)}</div><div class="small" style="color:#CFC8BD">${r.orders.length>1?r.orders.length+' заказа · ':''}${r.qty?Math.round(r.qty/p.pack)+' × '+p.packName:'—'}</div></div>
+    <div class="tile hi"><div class="l">Ориентировочная стоимость</div><div class="v">${fmtR(r.cost)}</div><div class="small" style="color:#CFC8BD">${fmtR(p.price)} за ${p.unit} · ${p.supplier}</div></div>
+    <div class="tile hi"><div class="l">Рекомендуемая дата заказа</div><div class="v">${r.firstDate? 'до '+fmtD(r.firstDate):'—'}</div><div class="small" style="color:#CFC8BD">поставка через ${p.lead} дн.</div></div>
+    <div class="tile"><div class="l">Статус</div><div class="v" style="font-size:15px;margin-top:6px">${status}</div><div class="small muted">${r.orders.some(o=>o.split)?'Объём больше, чем успеем израсходовать до конца срока годности: разбить поставку':'Срок годности позволяет закупить объём целиком'}</div></div>
+  </div>`;
+  // обоснование
+  const c0=r.chunks[0], ssD=r.ssDays;
+  const mrows = r.forecastMonths.slice(0,c.period==='year'?12:6).map(x=>{const M=MONTHS[x.mi]; return `<tr><td>${MNAME[M.m]} ${M.y}</td>${Object.entries(p.norms).map(([svc,n])=>`<td class="n">${Math.round(procedures(c.branch,svc,x.mi,opt.adj)).toLocaleString('ru-RU')}</td>`).join('')}<td class="n">${fmtQ(x.f,p)}</td></tr>`}).join('');
+  const k=kFact(c.branch,c.sku);
+  const svcNames=Object.keys(p.norms).map(id=>SERVICES.find(s=>s.id===id).name);
+  const formula = `<table class="formula">
+   <tr><td>Прогноз расхода</td><td>Σ (плановые процедуры × норма × коэф. факт/норма) = ${Object.entries(p.norms).map(([s,n])=>`${fmtN(n,3)} ${p.unit}`).join(' + ')} × ${fmtN(k,2)} × процедуры = ${fmtN(r.F,1)} ${p.unit}</td></tr>
+   <tr><td>Среднесуточный расход</td><td>${fmtN(c0.F,1)} ÷ ${c0.D} дн. = ${fmtN(c0.daily,3)} ${p.unit}/день${r.chunks.length>1?' (первый цикл заказа)':''}</td></tr>
+   <tr><td>Страховой запас</td><td>${ssD} дн. × ${fmtN(c0.daily,3)} = ${fmtN(c0.ss,1)} ${p.unit}</td></tr>
+   <tr><td>Точка заказа</td><td>${fmtN(c0.daily,3)} × ${p.lead} дн. + ${fmtN(c0.ss,1)} = ${fmtN(c0.rop,1)} ${p.unit}</td></tr>
+   ${r.chunks.map((ch,i)=>`<tr><td>Потребность${r.chunks.length>1?' · цикл '+(i+1)+' ('+fmtD(ch.start)+')':''}</td><td>${fmtN(ch.F,1)} + ${fmtN(ch.ss,1)} − ${fmtN(ch.stockStart,1)} (остаток) − ${fmtN(ch.arrQty,1)} (открытые заказы) = ${fmtN(ch.need,1)} ${p.unit}${ch.qty?` → с кратностью ${p.pack}: <b>${fmtN(ch.qty,1)} ${p.unit}</b>, заказать ${ch.urgent?'<b>сегодня (срочно)</b>':'до '+fmtD(ch.date)}`:' → закупка не нужна'}</td></tr>`).join('')}
+   <tr><td>Стоимость</td><td>${fmtN(r.qty,1)} ${p.unit} × ${fmtR(p.price)} = <b>${fmtR(r.cost)}</b></td></tr>
+   <tr><td>Дата заказа</td><td>${fmtD(TODAY)} + (${fmtN(c0.stockStart,1)} + ${fmtN(c0.arrQty,1)} − ${fmtN(c0.rop,1)}) ÷ ${fmtN(c0.daily,3)} = ${c0.qty?(c0.urgent?'срок уже наступил → заказать сегодня':'+'+Math.floor(c0.dateOff)+' дн. → '+fmtD(c0.date)):'—'}</td></tr>
+   <tr><td>Остаток на конец</td><td>${fmtN(r.avail,1)} + ${fmtN(r.openQty,1)} + ${fmtN(r.qty,1)} − ${fmtN(r.F,1)} = ${fmtN(r.endStock,1)} ${p.unit} (без закупки ${fmtN(r.endNoBuy,1)})</td></tr>
+  </table>`;
+  const batches=fefo(c.branch,c.sku);
+  $('#view').innerHTML = params + tiles + `
+  <div class="grid" style="grid-template-columns:3fr 2fr;margin-top:16px">
+   <div class="card" id="chart"><h3>Прогноз остатка: ${p.name}, ${bname(c.branch)}</h3>${stockChart(r,p)}
+    <div class="legend"><span><i style="background:var(--sea)"></i>с рекомендованной закупкой</span><span><i style="background:#B9B2A7"></i>без закупки</span><span><i style="background:var(--amber)"></i>точка заказа</span><span><i style="background:var(--red)"></i>страховой запас</span></div></div>
+   <div class="card"><h3>Партии на складе (FEFO)</h3><table><tr><th>Партия</th><th class="n">Остаток</th><th>Годен до</th><th>Статус</th></tr>
+    ${batches.map(b=>`<tr><td>${b.id}</td><td class="n">${fmtQ(b.qty,p)}</td><td>${fmtD(b.exp)}</td><td>${b.days<0?'<span class="chip grey">просрочена</span>':b.risk>0?`<span class="chip red">риск ${fmtQ(b.risk,p)}</span>`:b.days<=60?'<span class="chip amber">расходовать первой</span>':'<span class="chip green">в норме</span>'}</td></tr>`).join('')||'<tr><td colspan=4 class="muted">Нет остатков</td></tr>'}</table>
+    <h3 style="margin-top:14px">Открытые заказы</h3><table>${r.open.map(o=>`<tr><td>${o.no}</td><td class="n">${fmtQ(o.qty,p)}</td><td>поставка ${fmtD(o.date)}</td><td><span class="chip blue">${o.st}</span></td></tr>`).join('')||'<tr><td class="muted">Нет</td></tr>'}</table></div>
+  </div>
+  <div class="card sec" id="why"><h3>Обоснование расчёта</h3>
+   <div class="grid g2">
+    <div>${formula}</div>
+    <div>
+     <div class="small muted" style="margin-bottom:4px"><b>Использованные данные</b></div>
+     <table><tr><th>Месяц</th>${svcNames.map(n=>`<th class="n">${n}</th>`).join('')}<th class="n">Расход</th></tr>${mrows}</table>
+     <ul class="small" style="padding-left:18px;margin:8px 0">
+      <li>Плановая загрузка ${bname(c.branch)}: онлайн-запись и план продаж, выгрузка ${fmtD(TODAY)}${+c.load?`, <b>скорректирована на ${c.load>0?'+':''}${c.load}%</b>`:''}.</li>
+      <li>Норма расхода: техкарта услуги. Коэффициент факт/норма ${fmtN(k,2)} рассчитан по фактическому расходу за июль–сентябрь 2026.</li>
+      <li>Остатки по партиям: складской учёт на ${fmtD(TODAY)} 08:00; просроченные партии исключены.</li>
+      <li>Цена ${fmtR(p.price)} за ${p.unit}: прайс ${p.supplier} от 15.09.2026. Срок поставки ${p.lead} дн., кратность ${p.packName}.</li>
+     </ul>
+     <div class="small muted"><b>Допущения:</b> расход внутри месяца равномерный; поставка приходит в срок; открытые заказы поступают полностью; цена не меняется до даты заказа. Период: ${PERIODS[c.period].title}. Дата актуальности: ${fmtD(TODAY)}.</div>
+    </div>
+   </div>
+   <div class="sec" style="display:flex;gap:8px"><button class="btn" onclick="exportCalc()">Выгрузить расчёт (CSV)</button><button class="btn ghost" onclick="S.view='chat';askQ('Сколько ${p.name.toLowerCase()} закупить на ${c.period==='quarter'?'3 месяца':PERIODS[c.period].label} (${bname(c.branch)})?')">Объяснить в чате</button></div>
+  </div>`;
+}
+function stockChart(r,p){
+  const days=r.chunks.reduce((a,c)=>a+c.D,0), W=640, H=210, pl=44, pb=24;
+  const daily=[]; let di=0; r.chunks.forEach(ch=>ch.months.forEach(m=>{const M=MONTHS[m.mi];const n=monthDays(M.y,M.m);for(let i=0;i<n;i++)daily.push(m.f/n);}));
+  const arrivals={}, own={};
+  r.open.forEach(o=>{const k=diffDays(o.date,TODAY); arrivals[k]=(arrivals[k]||0)+o.qty;});
+  r.orders.forEach(o=>{const k=diffDays(o.date,TODAY)+(p.lead||0); own[k]=(own[k]||0)+o.qty;});
+  let s1=r.avail, s2=r.avail; const a=[], b=[];
+  for (let t=0;t<=days;t++){ a.push(s1); b.push(s2); s1+= (arrivals[t]||0)+(own[t]||0)-(daily[t]||0); s2+=(arrivals[t]||0)-(daily[t]||0); }
+  const max=Math.max(...a,r.rop)*1.1, min=Math.min(0,...b);
+  const X=t=>pl+(W-pl-8)*t/days, Y=v=>8+(H-8-pb)*(1-(v-min)/(max-min));
+  const path=arr=>arr.map((v,t)=>(t?'L':'M')+X(t).toFixed(1)+','+Y(v).toFixed(1)).join('');
+  let s=`<svg viewBox="0 0 ${W} ${H}" width="100%">`;
+  for (let i=0;i<=4;i++){const v=min+(max-min)*i/4; s+=`<line x1="${pl}" x2="${W-8}" y1="${Y(v)}" y2="${Y(v)}" stroke="#EEE9E1"/><text x="${pl-6}" y="${Y(v)+4}" font-size="10" text-anchor="end" fill="#7A736B">${fmtN(v,0)}</text>`;}
+  let acc=0; r.chunks.forEach(ch=>ch.months.forEach(m=>{const M=MONTHS[m.mi]; s+=`<text x="${X(acc)+4}" y="${H-6}" font-size="10" fill="#7A736B">${MNAME[M.m]}</text><line x1="${X(acc)}" x2="${X(acc)}" y1="8" y2="${H-pb}" stroke="#F3EFE8"/>`; acc+=monthDays(M.y,M.m);}));
+  if (min<0) s+=`<rect x="${pl}" y="${Y(0)}" width="${W-pl-8}" height="${Y(min)-Y(0)}" fill="#FBEAE8" opacity=".6"/>`;
+  s+=`<line x1="${pl}" x2="${W-8}" y1="${Y(r.rop)}" y2="${Y(r.rop)}" stroke="#A86A12" stroke-dasharray="5 4"/>`;
+  s+=`<line x1="${pl}" x2="${W-8}" y1="${Y(r.ss)}" y2="${Y(r.ss)}" stroke="#B3261E" stroke-dasharray="3 3"/>`;
+  s+=`<path d="${path(b)}" fill="none" stroke="#B9B2A7" stroke-width="2"/><path d="${path(a)}" fill="none" stroke="#1F5C6E" stroke-width="2.4"/>`;
+  r.orders.forEach(o=>{const t=diffDays(o.date,TODAY); s+=`<circle cx="${X(t)}" cy="${Y(a[t])}" r="5" fill="#A8844F"/><text x="${X(t)+7}" y="${Y(a[t])-8}" font-size="10.5" fill="#1E1C1A">заказ ${fmtN(o.qty,1)} ${p.unit}</text>`;});
+  return s+'</svg>';
+}
+function download(name, rows){
+  const csv='﻿'+rows.map(r=>r.map(x=>{x=String(x??'');return /[;"\n]/.test(x)?'"'+x.replace(/"/g,'""')+'"':x;}).join(';')).join('\r\n');
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'})); a.download=name; document.body.appendChild(a); a.click(); a.remove();
+}
+function exportCalc(){
+  const c=S.calc,p=P[c.sku]; const opt={}; if (c.ss!==null&&c.ss!=='') opt.ssDays=+c.ss; if (+c.load) opt.adj={all:+c.load};
+  const r=calcPurchase(c.branch,c.sku,c.period,opt);
+  download(`Расчёт_${c.sku}_${c.branch}.csv`,[['Показатель','Значение','Ед.'],['Товар',p.name,''],['Филиал',bname(c.branch),''],['Период',PERIODS[c.period].title,''],['Прогноз расхода',fmtN(r.F,1),p.unit],['Доступный остаток',fmtN(r.avail,1),p.unit],['Открытые заказы',fmtN(r.openQty,1),p.unit],['Страховой запас',fmtN(r.ss,1),p.unit],['Точка заказа',fmtN(r.rop,1),p.unit],['Объём закупки',fmtN(r.qty,1),p.unit],['Стоимость',Math.round(r.cost),'руб.'],['Дата заказа',r.firstDate?fmtD(r.firstDate):'—',''],['Дата актуальности',fmtD(TODAY),'']]);
+}
+// ===== Экран 3. План закупок и бюджет =====
+function planCols(per){ // месяцы для ≤ 3 мес., иначе кварталы
+  if (per.n<=3) return MONTHS.slice(0,per.n).map(M=>({l:MNAME[M.m]+' '+String(M.y).slice(2),test:d=>d.getFullYear()===M.y&&d.getMonth()===M.m}));
+  const out=[]; for (let q=0;q<per.n/3;q++){ const ms=MONTHS.slice(q*3,q*3+3); out.push({l:['IV кв. 26','I кв. 27','II кв. 27','III кв. 27'][q],test:d=>ms.some(M=>d.getFullYear()===M.y&&d.getMonth()===M.m)}); } return out;
+}
+function renderPlan(){
+  const pl=plan(S.branch,S.period,S.cat), per=pl.per, lim=limitFor(S.branch,S.period), over=pl.total-lim, cols=planCols(per);
+  const f = S.period==='quarter'? factors(S.branch,S.cat,S.base) : null;
+  // строки таблицы
+  let rowsH=''; let tot=0; const colTot=cols.map(()=>0);
+  for (let ci=0;ci<CATS.length;ci++){
+    const rows=pl.rows.filter(x=>x.p.cat===ci); if (!rows.length) continue;
+    let sub=0; rowsH+=`<tr class="grp"><td colspan="${7+cols.length}">${CATS[ci]}</td></tr>`;
+    for (const x of rows){ const {p,r,b}=x;
+      if (!r.F && !r.qty && !r.avail) continue;
+      const cells=cols.map((c,i)=>{const v=r.orders.filter(o=>c.test(o.date)).reduce((a,o)=>a+(o.cost||0),0); colTot[i]+=v; return `<td class="n">${v?fmtN(v/1000,1):''}</td>`;}).join('');
+      const st = r.nodata.length? '<span class="chip grey">нет данных</span>' : r.orders.some(o=>o.urgent)? '<span class="chip red">срочно</span>' : r.qty? (diffDays(r.firstDate,TODAY)<=14?'<span class="chip amber">≤ 14 дн.</span>':'<span class="chip blue">по плану</span>') : (r.avail/(r.daily||1e-9)>120?'<span class="chip violet">излишек</span>':'<span class="chip green">не нужен</span>');
+      if (r.cost) {sub+=r.cost; tot+=r.cost;}
+      rowsH+=`<tr><td><span class="linkish" onclick="S.calc.period=S.period;openCalc('${b}','${p.sku}')">${p.name}</span><div class="small muted">${p.sku}${pl.bs.length>1?' · '+bname(b):''}</div></td>
+        <td class="n">${fmtQ(r.F,p)}</td><td class="n">${fmtQ(r.avail+r.openQty,p)}</td><td class="n"><b>${r.qty?fmtQ(r.qty,p):'—'}</b></td><td>${r.firstDate&&!r.nodata.length?(r.orders.some(o=>o.urgent)?'сегодня':fmtD(r.firstDate)):'—'}</td><td class="n">${r.nodata.length?'—':fmtR(r.cost)}</td>${cells}<td>${st}</td></tr>`;
+    }
+    rowsH+=`<tr><td colspan="5" class="small muted" style="text-align:right">Итого по категории</td><td class="n"><b>${fmtR(sub)}</b></td><td colspan="${cols.length+1}"></td></tr>`;
+  }
+  rowsH+=`<tr class="tot"><td colspan="5">Итого бюджет закупок</td><td class="n">${fmtR(tot)}</td>${colTot.map(v=>`<td class="n">${fmtN(v/1000,1)}</td>`).join('')}<td></td></tr>`;
+  // варианты при превышении лимита
+  let variants='';
+  if (over>0){
+    const defer=[]; for (const x of pl.rows) for (const o of x.r.orders) if (o.cost && diffDays(o.date,TODAY)>30 && !o.urgent) defer.push({x,o});
+    const deferSum=defer.reduce((a,d)=>a+d.o.cost,0);
+    const plSS=plan(S.branch,S.period,S.cat,{ssDays:5}); const ssSave=pl.total-plSS.total;
+    const tr=transfers().filter(t=>(S.branch==='all'||t.to===S.branch)&&(S.cat==='all'||P[t.sku].cat==+S.cat)); const trSum=tr.reduce((a,t)=>a+t.save,0);
+    variants=`<div class="card sec" id="variants"><h3>Бюджет превышает лимит на ${fmtR(over)}: варианты</h3>
+     <div class="small muted" style="margin-bottom:8px">Помощник не сокращает критичные позиции сам. Выберите вариант или их комбинацию, решение фиксируется в журнале.</div>
+     <table><tr><th>Вариант</th><th class="n">Экономия в периоде</th><th>Риск</th></tr>
+      <tr><td><b>Перемещение излишков между филиалами</b><div class="small muted">${tr.map(t=>`${P[t.sku].name}: ${fmtQ(t.qty,P[t.sku])} ${bname(t.from)} → ${bname(t.to)}`).join('; ')||'нет подходящих излишков'}</div></td><td class="n">${fmtR(trSum)}</td><td><span class="chip green">низкий</span> заодно снижает риск списания</td></tr>
+      <tr><td><b>Перенести заказы, срок которых позже 30 дней</b><div class="small muted">${defer.length} заказ(ов): ${[...new Set(defer.map(d=>d.x.p.name))].slice(0,4).join(', ')}${defer.length>4?'…':''}</div></td><td class="n">${fmtR(deferSum)}</td><td><span class="chip amber">средний</span> заказ нужно разместить в начале следующего периода</td></tr>
+      <tr><td><b>Снизить страховой запас до 5 дней</b><div class="small muted">по всем позициям периода</div></td><td class="n">${fmtR(ssSave)}</td><td><span class="chip red">высокий</span> меньше защиты от задержки поставки и всплеска спроса</td></tr>
+     </table>
+     <div class="notice sec">Комбинация «перемещение + перенос» даёт ${fmtR(trSum+deferSum)} ${trSum+deferSum>=over?'и укладывает план в лимит без снижения страхового запаса.':'; для полного попадания в лимит нужно дополнительно снизить страховой запас или согласовать увеличение лимита.'}</div></div>`;
+  } else variants=`<div class="notice green sec">План укладывается в лимит: резерв ${fmtR(-over)} (${fmtPct(-over/lim,0)}).</div>`;
+  const wf = f? waterfall(f) : '<div class="muted small">Сравнение с базой и факторный анализ доступны для квартального плана.</div>';
+  const catRows=Object.entries(pl.byCat).map(([k,v])=>`<tr><td>${CATS[k]}</td><td class="n">${fmtR(v)}</td><td class="n">${fmtPct(v/pl.total,0)}</td></tr>`).join('');
+  const brRows=Object.entries(pl.byBranch).map(([k,v])=>`<tr><td>${bname(k)}</td><td class="n">${fmtR(v)}</td><td class="n">${fmtR(limitFor(k,S.period))}</td></tr>`).join('');
+  $('#view').innerHTML=`
+  <div class="grid g4" id="plankpi">
+   <div class="card kpi"><div class="l">Бюджет закупок · ${per.title}</div><div class="v">${fmtR(pl.total)}</div><div class="s">${bname(S.branch)} · ${S.cat==='all'?'все категории':CATS[S.cat]}</div></div>
+   <div class="card kpi ${over>0?'alert':''}"><div class="l">Лимит</div><div class="v"><input type="number" step="10000" value="${lim}" style="width:150px;font-size:18px;font-weight:600" onchange="S.limit['${S.branch}|${S.period}']=+this.value;renderPlan()"> ₽</div><div class="bar ${over>0?'over':''}" style="margin-top:6px"><i style="width:${Math.min(100,pl.total/lim*100)}%"></i></div><div class="s">${over>0?'превышение '+fmtR(over):'использовано '+fmtPct(pl.total/lim,0)}</div></div>
+   <div class="card kpi"><div class="l">Сравнение: <select onchange="S.base=this.value;renderPlan()" style="font-size:12px;padding:2px 6px"><option value="yoy" ${S.base==='yoy'?'selected':''}>IV кв. 2025 (год назад)</option><option value="qoq" ${S.base==='qoq'?'selected':''}>III кв. 2026</option></select></div><div class="v">${f?(f.delta>0?'+':'')+fmtR(f.delta):'—'}</div><div class="s">${f?'база '+fmtR(f.B0)+' · '+(f.delta>0?'+':'')+fmtPct(f.delta/f.B0,0):'только для квартала'}</div></div>
+   <div class="card kpi"><div class="l">Позиции к заказу</div><div class="v">${pl.rows.filter(x=>x.r.qty&&!x.r.nodata.length).length}</div><div class="s">${pl.rows.filter(x=>x.r.nodata.length&&x.r.F>0).length} без данных · не рассчитаны</div></div>
+  </div>
+  <div class="grid" style="grid-template-columns:1fr 1fr 1fr;margin-top:16px" id="budget">
+   <div class="card"><h3>По ${cols.length===per.n?'месяцам':'кварталам'} (дата заказа)</h3>${barsSVG(cols.map((c,i)=>({l:c.l,v:colTot[i]})),lim/cols.length)}</div>
+   <div class="card"><h3>Почему бюджет изменился</h3>${wf}</div>
+   <div class="card"><h3>По категориям</h3><table>${catRows}</table>${pl.bs.length>1?`<h3 style="margin-top:12px">По филиалам</h3><table><tr><th>Филиал</th><th class="n">План</th><th class="n">Лимит</th></tr>${brRows}</table>`:''}</div>
+  </div>
+  ${variants}
+  <div class="card sec" id="plantable"><div style="display:flex;align-items:center;gap:10px;margin-bottom:10px"><h3 style="margin:0">План закупок: ${per.title}</h3><span class="muted small">суммы по периодам в тыс. ₽</span>
+    <span style="margin-left:auto;display:flex;gap:8px"><button class="btn ghost" onclick="exportPlan()">Выгрузить (CSV)</button><button class="btn" onclick="approvePlan()">Утвердить план</button></span></div>
+   <div style="overflow:auto"><table><tr><th>Товар</th><th class="n">Прогноз</th><th class="n">Остаток + заказы</th><th class="n">Закупить</th><th>Дата заказа</th><th class="n">Стоимость</th>${cols.map(c=>`<th class="n">${c.l}</th>`).join('')}<th>Статус</th></tr>${rowsH}</table></div>
+   <div class="small muted" style="margin-top:8px">Заказы в MVP не размещаются автоматически: утверждённый план выгружается для специалиста по закупкам и финансового менеджера.</div></div>`;
+}
+function waterfall(f){
+  const items=[{l:'База',v:f.B0,t:'base'},{l:'Спрос',v:f.demand},{l:'Остатки и СЗ',v:f.stockfx},{l:'Цены',v:f.price},{l:'План',v:f.B1,t:'base'}];
+  const W=320,H=170,pb=30; const max=Math.max(f.B0,f.B1,f.B0+Math.max(0,f.demand))*1.12;
+  const Y=v=>8+(H-pb-8)*(1-v/max); const bw=44; let run=f.B0, s=`<svg viewBox="0 0 ${W} ${H}" width="100%">`;
+  items.forEach((it,i)=>{ const x=10+i*62; let y0,y1,col;
+    if (it.t){ y0=Y(it.v); y1=Y(0); col='#1E1C1A'; } else { const a=run, b=run+it.v; y0=Y(Math.max(a,b)); y1=Y(Math.min(a,b)); col=it.v>=0?'#B3261E':'#2F6B3F'; run=b; }
+    s+=`<rect x="${x}" y="${y0}" width="${bw}" height="${Math.max(1,y1-y0)}" fill="${col}" rx="2"/><text x="${x+bw/2}" y="${H-16}" font-size="10" text-anchor="middle" fill="#7A736B">${it.l}</text><text x="${x+bw/2}" y="${y0-4}" font-size="10" text-anchor="middle" fill="#1E1C1A">${it.t?Math.round(it.v/1000)+'к':(it.v>0?'+':'−')+Math.abs(Math.round(it.v/1000))+'к'}</text>`; });
+  s+='</svg>';
+  return s+`<div class="small muted">Изменение ${f.delta>0?'+':''}${fmtR(f.delta)}: спрос (загрузка) ${sgn(f.demand)}, восстановление или расход запасов ${sgn(f.stockfx)}, рост цен ${sgn(f.price)}. <span style="color:var(--red)">■</span> увеличивает, <span style="color:var(--green)">■</span> снижает бюджет.</div>`;
+}
+const sgn=v=>(v>=0?'+':'−')+fmtR(Math.abs(v));
+function exportPlan(){
+  const pl=plan(S.branch,S.period,S.cat); const rows=[['Филиал','SKU','Товар','Категория','Прогноз','Остаток+заказы','Закупить','Ед.','Дата заказа','Цена','Стоимость','Поставщик']];
+  for (const {b,p,r} of pl.rows) if (r.qty) rows.push([bname(b),p.sku,p.name,CATS[p.cat],fmtN(r.F,1),fmtN(r.avail+r.openQty,1),fmtN(r.qty,1),p.unit,r.firstDate?fmtD(r.firstDate):'',p.price??'нет данных',r.cost?Math.round(r.cost):'',p.supplier]);
+  rows.push([],['Итого','','','','','','','','','',Math.round(pl.total)],['Лимит','','','','','','','','','',limitFor(S.branch,S.period)],['Дата актуальности',fmtD(TODAY)]);
+  download(`План_закупок_${bname(S.branch)}_${PERIODS[S.period].label}.csv`,rows);
+}
+function approvePlan(){
+  const pl=plan(S.branch,S.period,S.cat), lim=limitFor(S.branch,S.period);
+  const now=new Date(); S.journal.unshift({ts:fmtD(TODAY)+' '+now.toTimeString().slice(0,5), who:'Управляющий (демо)', scope:`${bname(S.branch)} · ${PERIODS[S.period].title}${S.cat!=='all'?' · '+CATS[S.cat]:''}`, total:pl.total, limit:lim, st:pl.total>lim?'Утверждён с превышением':'Утверждён', note:`Страховой запас по правилам компании; цены на ${fmtD(TODAY)}; ${pl.rows.filter(x=>x.r.qty).length} позиций`});
+  toast('План утверждён и сохранён в журнале решений. <span class="linkish" onclick="go(\'journal\')">Открыть журнал</span>');
+}
+
+// ===== Экран 4. Сроки годности =====
+function renderExpiry(){
+  const rows=[]; let riskSum=0;
+  for (const b of scopeB()) for (const p of PRODUCTS){ if (S.cat!=='all'&&p.cat!=+S.cat) continue;
+    const r=calcPurchase(b,p.sku,'quarter');
+    for (const x of fefo(b,p.sku)){ if (x.days<0||(x.days>120&&x.risk<=0)) continue; rows.push({b,p,x,r}); if (p.price) riskSum+=x.risk*p.price; } }
+  rows.sort((a,b)=>(b.x.risk>0)-(a.x.risk>0)||a.x.days-b.x.days);
+  const rec = ({b,p,x,r}) => {
+    if (x.risk<=0) return x.days<=60?'Использовать в первую очередь (FEFO), выдавать мастерам из этой партии':'В норме';
+    const other=BRANCHES.filter(o=>o.id!==b).map(o=>({o,r:calcPurchase(o.id,p.sku,'quarter')})).filter(z=>z.r.daily>0).sort((a,c)=>c.r.daily-a.r.daily)[0];
+    const canUse = other? Math.min(x.risk, other.r.daily*x.days*0.5) : 0;
+    let t = other && canUse>0? `Переместить ${fmtQ(canUse,p)} в ${other.o.name} (расход там ${fmtN(other.r.daily,2)} ${p.unit}/день)` : 'Использовать в акции или новой услуге';
+    if (r.qty>0) t+=`; не закупать до ${fmtD(x.exp)}`;
+    return t; };
+  $('#view').innerHTML=`<div class="grid g3">
+   <div class="card kpi"><div class="l">Партий со сроком до 120 дней или с риском</div><div class="v">${rows.length}</div><div class="s">${bname(S.branch)}</div></div>
+   <div class="card kpi ${rows.some(r=>r.x.risk>0)?'alert':''}"><div class="l">Под риском списания</div><div class="v">${rows.filter(r=>r.x.risk>0).length} парт.</div><div class="s">не успеем израсходовать до окончания срока</div></div>
+   <div class="card kpi ${riskSum?'alert':''}"><div class="l">Сумма риска списания</div><div class="v">${fmtR(riskSum)}</div><div class="s">по закупочным ценам</div></div></div>
+   <div class="card sec"><h3>Партии по сроку годности</h3><div class="small muted" style="margin-bottom:8px">Порядок расхода FEFO: первой уходит партия с ближайшим сроком. Риск = остаток партии минус прогнозный расход до даты окончания срока.</div>
+   <table><tr><th>Товар</th><th>Филиал</th><th>Партия</th><th class="n">Остаток</th><th>Годен до</th><th class="n">Дней</th><th class="n">Риск списания</th><th>Рекомендация</th></tr>
+   ${rows.map(z=>`<tr><td><span class="linkish" onclick="openCalc('${z.b}','${z.p.sku}')">${z.p.name}</span></td><td>${bname(z.b)}</td><td>${z.x.id}</td><td class="n">${fmtQ(z.x.qty,z.p)}</td><td>${fmtD(z.x.exp)}</td><td class="n">${z.x.days<=60?`<span class="chip ${z.x.days<=30?'red':'amber'}">${z.x.days}</span>`:z.x.days}</td><td class="n">${z.x.risk>0?`<b style="color:var(--red)">${fmtQ(z.x.risk,z.p)}</b><div class="small muted">${fmtR(z.x.risk*(z.p.price||0))}</div>`:'—'}</td><td class="small">${rec(z)}</td></tr>`).join('')}</table>
+   <div class="small muted" style="margin-top:8px">Списание в MVP не выполняется автоматически: решение принимает управляющий.</div></div>`;
+}
+
+// ===== Экран 5. Цены и себестоимость =====
+function renderPrices(){
+  const bi=S.priceBase;
+  const pr=PRODUCTS.filter(p=>p.price!=null).map(p=>{const b=priceAt(p,bi);return {p,b,d:p.price-b,pc:p.price/b-1};}).sort((a,b)=>b.pc-a.pc);
+  const br=S.svcBranch;
+  const svc=SERVICES.map(s=>{const c=serviceCost(br,s.id); const base=c.lines.reduce((a,l)=>a+l.q*priceAt(l.p,bi),0); const qn=[0,1,2].reduce((a,mi)=>a+procedures(br,s.id,mi),0); return {s,now:c.now,base,lines:c.lines,qn};});
+  const wp=P[S.whatif.sku]; const wi=SERVICES.filter(s=>wp.norms[s.id]).map(s=>{const a=serviceCost(br,s.id), b=serviceCost(br,s.id,{[wp.sku]:+S.whatif.price}); const qn=[0,1,2].reduce((x,mi)=>x+procedures(br,s.id,mi),0); return {s,a:a.now,b:b.now,qn};});
+  $('#view').innerHTML=`
+  <div class="card"><div class="params"><label>Сравнить с периодом<select onchange="S.priceBase=+this.value;renderPrices()">${QLABELS.slice(0,4).map((l,i)=>`<option value="${i}" ${bi===i?'selected':''}>${l}</option>`).join('')}</select></label>
+   <label>Филиал (для себестоимости)<select onchange="S.svcBranch=this.value;renderPrices()">${BRANCHES.map(b=>`<option value="${b.id}" ${br===b.id?'selected':''}>${b.name}</option>`).join('')}</select></label><span class="pill">Текущий период: IV кв. 2026 · цены на ${fmtD(TODAY)}</span></div></div>
+  <div class="grid" style="grid-template-columns:1fr;margin-top:16px">
+   <div class="card"><h3>Динамика закупочных цен по поставщикам</h3><table><tr><th>Товар · поставщик</th>${QLABELS.map(l=>`<th class="n">${l.replace(' 20',' ')}</th>`).join('')}<th class="n">Δ ₽</th><th class="n">Δ %</th></tr>
+    ${pr.map(x=>`<tr><td>${x.p.name}<div class="small muted">${x.p.supplier} · за ${x.p.unit}</div></td>${QLABELS.map((l,i)=>`<td class="n" style="${i===bi?'background:#FAF7F2;font-weight:600':''}">${fmtN(priceAt(x.p,i),0)}</td>`).join('')}<td class="n">${x.d>0?'+':''}${fmtN(x.d,0)}</td><td class="n">${x.pc>0.1?`<span class="chip red">+${fmtPct(x.pc)}</span>`:(x.pc>0?'+':'')+fmtPct(x.pc)}</td></tr>`).join('')}</table>
+    <div class="small muted" style="margin-top:6px">Источник: накладные и прайсы поставщиков. Цена периода — средневзвешенная по закупкам. Порог сигнала: рост больше 10%.</div></div>
+   <div class="card"><h3>Себестоимость услуг и маржа · ${bname(br)}</h3><table><tr><th>Услуга</th><th class="n">Цена</th><th class="n">Материалы, база</th><th class="n">Сейчас</th><th class="n">Δ ₽ / %</th><th class="n">Маржа по материалам</th><th class="n">Δ маржи за IV кв.</th></tr>
+    ${svc.map(x=>`<tr><td>${x.s.name}</td><td class="n">${fmtN(x.s.price,0)}</td><td class="n">${fmtN(x.base,1)}</td><td class="n">${fmtN(x.now,1)}</td><td class="n">+${fmtN(x.now-x.base,1)}<div class="small muted">+${fmtPct(x.now/x.base-1)}</div></td><td class="n">${fmtN(x.s.price-x.now,0)}<div class="small muted">${fmtPct((x.s.price-x.now)/x.s.price)}</div></td><td class="n" style="color:var(--red)">−${fmtR((x.now-x.base)*x.qn)}<div class="small muted">${Math.round(x.qn).toLocaleString('ru-RU')} процедур</div></td></tr>`).join('')}</table>
+    <details class="sec"><summary class="small" style="cursor:pointer;color:var(--sand);font-weight:600">Состав материалов: ${svc[0].s.name}</summary><table>${svc[0].lines.map(l=>`<tr><td>${l.p.name}</td><td class="n">${fmtN(l.q,4)} ${l.p.unit}</td><td class="n">${fmtN(priceAt(l.p,bi),0)} → ${fmtN(l.p.price,0)} ₽</td><td class="n">${fmtN(l.q*priceAt(l.p,bi),1)} → ${fmtN(l.now,1)} ₽</td></tr>`).join('')}</table></details>
+    <div class="small muted">Себестоимость по материалам: норма техкарты × коэффициент факт/норма × цена. Труд и накладные не включены (открытый вопрос к заказчику).</div></div>
+  </div>
+  <div class="card sec"><h3>Что будет, если цена изменится</h3><div class="params"><label>Товар<select onchange="S.whatif.sku=this.value;S.whatif.price=P[this.value].price;renderPrices()">${PRODUCTS.filter(p=>p.price!=null&&Object.keys(p.norms).length).map(p=>`<option value="${p.sku}" ${S.whatif.sku===p.sku?'selected':''}>${p.name}</option>`).join('')}</select></label>
+   <label>Новая цена за ${wp.unit}, ₽<input type="number" value="${S.whatif.price}" style="width:120px" onchange="S.whatif.price=+this.value;renderPrices()"></label><span class="pill">сейчас ${fmtR(wp.price)} · изменение ${fmtPct(S.whatif.price/wp.price-1)}</span></div>
+   <table class="sec"><tr><th>Услуга</th><th class="n">Материалы сейчас</th><th class="n">При новой цене</th><th class="n">Δ на процедуру</th><th class="n">Маржа, п.п.</th><th class="n">Эффект за IV кв.</th></tr>
+   ${wi.map(x=>`<tr><td>${x.s.name}</td><td class="n">${fmtN(x.a,1)} ₽</td><td class="n">${fmtN(x.b,1)} ₽</td><td class="n">${x.b-x.a>=0?'+':''}${fmtN(x.b-x.a,2)} ₽</td><td class="n">${fmtN(-(x.b-x.a)/x.s.price*100,2)}</td><td class="n">${x.b-x.a>0?'−':'+'}${fmtR(Math.abs((x.b-x.a)*x.qn))}</td></tr>`).join('')}</table></div>`;
+}
+
+// ===== Экран 7. Журнал =====
+function renderJournal(){
+  $('#view').innerHTML=`<div class="card"><h3>Журнал утверждённых планов и решений</h3><div class="small muted" style="margin-bottom:10px">Каждая версия плана хранится с параметрами расчёта и датой актуальности данных, чтобы можно было восстановить, почему заказали именно столько.</div>
+  <table><tr><th>Дата</th><th>Кто</th><th>Объект и период</th><th class="n">Бюджет</th><th class="n">Лимит</th><th>Статус</th><th>Параметры</th></tr>
+  ${S.journal.map(j=>`<tr><td>${j.ts}</td><td>${j.who}</td><td>${j.scope}</td><td class="n">${fmtR(j.total)}</td><td class="n">${fmtR(j.limit)}</td><td><span class="chip ${j.total>j.limit?'amber':'green'}">${j.st}</span></td><td class="small">${j.note}</td></tr>`).join('')}</table></div>`;
+}
+// ===== Экран 6. AI-помощник =====
+// В прототипе разбор запроса выполняется правилами (имитация LLM). Все числа берутся только из расчётных функций.
+const QUICK = [
+ ['Склад',['Какой текущий остаток массажного масла на Розе Хутор и из каких партий?','Какие товары закончатся раньше следующей поставки?','Какие позиции нужно заказать в ближайшие 14 дней?','Какие партии истекают в ближайшие 60 дней и что использовать первым?','Какие товары без движения больше 60 дней?','Где у нас излишек и на сколько дней его хватит?']],
+ ['Прогноз и закупка',['Сколько массажного масла нужно закупить на следующие три месяца и сколько это будет стоить?','Сколько масла заказать?','Когда заказать скраб, чтобы не было дефицита?','Как изменится закупка масла, если загрузка в декабре вырастет на 20%?','У какого товара резко изменился расход за месяц?']],
+ ['План и бюджет',['Сформируй план закупок на IV квартал по месяцам и категориям','Какой бюджет закупок на год?','Укладываемся в лимит 500 000 ₽ на квартал? Если нет, что предложишь?','Почему бюджет IV квартала отличается от IV квартала прошлого года?','Покажи бюджет отдельно по Розе Хутор и Адлеру']],
+ ['Цены и себестоимость',['Как выросла цена масла у поставщика к прошлому кварталу?','Как изменились себестоимость и маржа массажа 60 мин?']],
+ ['Границы помощника',['Сколько стоит закупка маски с голубой глиной?','Размести заказ у поставщика на масло']],
+];
+function renderChat(){
+  if (!S.chat.length) S.chat.push({me:false,html:`<h4>Здравствуйте! Я помощник по складу и закупкам.</h4>Спросите обычным языком про остатки, закупки, бюджет, сроки годности или цены. Каждое число в ответе я беру из расчётного модуля и показываю, как оно получено. Заказы я не размещаю и данные не придумываю.<div class="small muted" style="margin-top:6px">Данные на ${fmtD(TODAY)} · филиалы: Роза Хутор, Сириус, Адлер</div>`});
+  $('#view').innerHTML=`<div class="chat"><div class="card" style="display:flex;flex-direction:column;min-height:0"><div class="msgs" id="msgs">${S.chat.map(m=>`<div class="msg ${m.me?'me':''}">${m.html}${m.fn?`<div class="fn">⚙ ${m.fn}</div>`:''}</div>`).join('')}</div>
+   <div class="inrow"><input id="q" type="text" placeholder="Например: сколько скраба закупить на квартал для Сириуса?" onkeydown="if(event.key==='Enter')askQ(this.value)"><button class="btn" onclick="askQ($('#q').value)">Спросить</button></div></div>
+   <div class="card qs"><h3>Контрольные вопросы</h3>${QUICK.map(([g,qs])=>`<h5>${g}</h5>${qs.map(q=>`<button onclick="askQ(this.textContent)">${q}</button>`).join('')}`).join('')}</div></div>`;
+  const m=$('#msgs'); m.scrollTop=m.scrollHeight;
+}
+function askQ(q){
+  q=(q||'').trim(); if(!q) return; if (S.view!=='chat'){S.view='chat';}
+  S.chat.push({me:true,html:esc(q)}); S.chat.push({me:false,html:'<span class="typing">Разбираю запрос и вызываю расчёт…</span>',tmp:true}); render();
+  setTimeout(()=>{ S.chat=S.chat.filter(m=>!m.tmp); const t0=performance.now(); const a=answer(q); a.html+=`<div class="small muted" style="margin-top:6px">Данные на ${fmtD(TODAY)} · расчёт ${Math.max(1,Math.round(performance.now()-t0))} мс</div>`; S.chat.push({me:false,...a}); render(); },650);
+}
+const low=s=>s.toLowerCase().replace(/ё/g,'е');
+function findSku(t){
+  const rules=[['глин','MS-13'],['кокос','OL-14'],['лаванд','AR-03'],['эфирн','AR-03'],['крем для рук','HN-09'],['рук','HN-09'],['спортивн','CR-02'],['крем','CR-02'],['водоросл','WR-04'],['ламинар','WR-04'],['скраб','SC-05'],['сбор','CD-06'],['бочк','CD-06'],['трав','CD-06'],['сыворот','FC-08'],['маск','FC-07'],['простын','DS-10'],['полотен','DS-11'],['пленк','DS-12'],['масл','MO-01']];
+  for (const [k,s] of rules) if (t.includes(k)) return s; return null;
+}
+function findBranches(t){ const out=[]; if (/роз|хутор/.test(t)) out.push('rh'); if (/сириус/.test(t)) out.push('sr'); if (/адлер/.test(t)) out.push('ad'); return out; }
+function findPeriod(t){
+  if (/полгод|полугод|6 мес/.test(t)) return 'half'; if (/год(?!ня)|12 мес/.test(t)) return 'year';
+  if (/квартал|3 мес|три месяц|трех месяц|трёх месяц/.test(t)) return 'quarter'; if (/месяц/.test(t)) return 'month'; return null;
+}
+function tbl(head,rows){ return `<table><tr>${head.map((h,i)=>`<th class="${i?'n':''}">${h}</th>`).join('')}</tr>${rows.map(r=>`<tr>${r.map((c,i)=>`<td class="${i?'n':''}">${c}</td>`).join('')}</tr>`).join('')}</table>`; }
+function why(inner){ return `<details><summary>Как посчитано</summary>${inner}</details>`; }
+
+function answer(q){
+  const t=low(q); const sku=findSku(t); const bs=findBranches(t); const per=findPeriod(t);
+  const b1 = bs[0] || (S.branch!=='all'?S.branch:'rh'); const bNote = bs.length? '' : `<div class="small muted">Филиал не указан, расчёт для «${bname(b1)}» (филиал по умолчанию). Можно уточнить: «…для Сириуса».</div>`;
+  const scope = bs.length? bs : BRANCHES.map(b=>b.id);
+  // границы помощника
+  if (/размест|оформи|отправь заказ|закажи/.test(t))
+    return {html:`<h4>Разместить заказ я не могу</h4>В MVP заказы поставщикам не размещаются автоматически: это решение и действие специалиста по закупкам. Могу подготовить рекомендацию и выгрузить план закупок.${sku?`<br><br>Рекомендация по «${pname(sku)}» (${bname(b1)}): `+(()=>{const r=calcPurchase(b1,sku,'quarter');return r.qty?`${fmtQ(r.qty,P[sku])} на ${fmtR(r.cost)}, заказать до ${fmtD(r.firstDate)}.`:'закупка не требуется.';})():''}<div style="margin-top:8px"><button class="btn ghost" onclick="go('plan')">Открыть план и выгрузку</button></div>`,fn:'policy_check(action="place_order") → запрещено в MVP'};
+  if (sku && P[sku].price==null){ const r=calcPurchase(b1,sku,per||'quarter');
+    return {html:`<h4>Недостаточно данных для расчёта стоимости</h4>По позиции «${pname(sku)}» в справочнике не заполнены: <b>${r.nodata.join(', ')}</b>. Я не подставляю цену «на глаз», поэтому объём и стоимость не рассчитываю.<br>Известно только: прогноз расхода ${fmtQ(r.F,P[sku])} за ${PERIODS[per||'quarter'].label} по плановой загрузке (${bname(b1)}).<br><br>Что нужно: выбрать поставщика и внести цену и срок поставки, после этого расчёт выполнится автоматически.`,fn:`calc_purchase(sku="${sku}", branch="${b1}") → status: insufficient_data`}; }
+  // себестоимость и маржа
+  if (/себестоим|маржа|маржин/.test(t)){
+    const s=SERVICES.find(x=>low(x.name).split(' ')[0].slice(0,5)===t.match(/(массаж|обертыв|кедров|уход за лиц|экспресс)/)?.[0]?.slice(0,5))||SERVICES[0];
+    const c=serviceCost(b1,s.id); const base=c.lines.reduce((a,l)=>a+l.q*l.p.prev,0); const qn=[0,1,2].reduce((a,mi)=>a+procedures(b1,s.id,mi),0);
+    return {html:`<h4>${s.name}, ${bname(b1)}: себестоимость по материалам и маржа</h4>${tbl(['Показатель','III кв. 2026','IV кв. 2026','Изменение'],[
+      ['Материалы на процедуру',fmtN(base,1)+' ₽',fmtN(c.now,1)+' ₽',`+${fmtN(c.now-base,1)} ₽ (+${fmtPct(c.now/base-1)})`],
+      ['Маржа по материалам на процедуру',fmtN(s.price-base,0)+' ₽',fmtN(s.price-c.now,0)+' ₽',`−${fmtN(c.now-base,1)} ₽`],
+      ['Маржинальность по материалам',fmtPct((s.price-base)/s.price),fmtPct((s.price-c.now)/s.price),`−${fmtN((c.now-base)/s.price*100,2)} п.п.`],
+      ['Эффект на маржу за IV кв.','',`${Math.round(qn).toLocaleString('ru-RU')} процедур`,`−${fmtR((c.now-base)*qn)}`]])}
+      Главный вклад: ${c.lines.map(l=>({l,d:l.now-l.q*l.p.prev})).sort((a,b)=>b.d-a.d).slice(0,2).map(x=>`${x.l.p.name.toLowerCase()} +${fmtN(x.d,1)} ₽`).join(', ')}.${bNote}
+      ${why(`Материальная себестоимость = Σ (норма техкарты × коэф. факт/норма × цена). Цена услуги ${fmtR(s.price)}. Состав: ${c.lines.map(l=>`${l.p.name} ${fmtN(l.q,4)} ${l.p.unit} × ${fmtN(l.p.price,0)} ₽`).join('; ')}. Труд и накладные не включены.`)}`,fn:`service_cost(service="${s.id}", branch="${b1}", base="III кв. 2026")`};
+  }
+  // рост цен
+  if (/цен|подорож/.test(t)){
+    const list = sku? [P[sku]] : PRODUCTS.filter(p=>p.price!=null);
+    const rows=list.map(p=>({p,d:p.price-p.prev,pc:p.price/p.prev-1})).sort((a,b)=>b.pc-a.pc).filter(x=>sku||x.pc>0.1||/все/.test(t));
+    return {html:`<h4>${sku?`Цена: ${P[sku].name}`:'Товары, подорожавшие больше чем на 10%'}</h4>${tbl(['Товар · поставщик','III кв. 2026','IV кв. 2026','Δ ₽','Δ %'],rows.map(x=>[`${x.p.name}<div class="small muted">${x.p.supplier}</div>`,fmtR(x.p.prev),fmtR(x.p.price),'+'+fmtN(x.d,0)+' ₽',(x.pc>0.1?'<span class="chip red">':'')+'+'+fmtPct(x.pc)+(x.pc>0.1?'</span>':'')]))}
+      ${sku?`Влияние на закупку IV кв. (все филиалы): +${fmtR(BRANCHES.reduce((a,b)=>a+calcPurchase(b.id,sku,'quarter').qty,0)*(P[sku].price-P[sku].prev))}.`:''}
+      ${why('Цена периода — средневзвешенная цена закупок по накладным. Рост = P₁ − P₀ и (P₁ ÷ P₀ − 1) × 100. Сравнение с любым периодом доступно на экране «Цены и себестоимость».')}<div style="margin-top:6px"><button class="btn ghost" onclick="go('prices')">Открыть динамику цен</button></div>`,fn:`price_change(sku=${sku?`"${sku}"`:'*'}, from="III кв. 2026", to="IV кв. 2026")`};
+  }
+  // причины изменения бюджета
+  if (/почему|причин|отлича|изменил.*бюджет/.test(t)){
+    const base=/прошл.*квартал|iii|3 кв/.test(t)&&!/прошлого года|год назад/.test(t)?'qoq':'yoy';
+    const br=bs.length===1?bs[0]:'all'; const f=factors(br,'all',base);
+    return {html:`<h4>Бюджет IV кв. 2026 vs ${base==='yoy'?'IV кв. 2025':'III кв. 2026'} · ${bname(br)}</h4>${tbl(['Фактор','Влияние'],[
+      ['Бюджет базового периода',fmtR(f.B0)],['Спрос: изменение плановой загрузки',sgn(f.demand)],['Остатки и страховой запас',sgn(f.stockfx)],['Рост закупочных цен',sgn(f.price)],['<b>Бюджет IV кв. 2026</b>','<b>'+fmtR(f.B1)+'</b>']])}
+      Итог: ${f.delta>=0?'рост':'снижение'} на ${fmtR(Math.abs(f.delta))} (${fmtPct(Math.abs(f.delta)/f.B0,0)}). ${f.stockfx<0?'Основная причина снижения: на складах уже есть запасы, закупать нужно меньше, чем расходуем.':''} Цены добавляют ${fmtR(f.price)}, в основном водоросли (+10,3%) и эфирное масло лаванды (+23,2%).
+      ${why(`Разложение: эффект объёма = (Q₁ − Q₀) × P₀, делится на спрос (изменение прогнозного расхода) и остатки (изменение разницы «закупка − расход»); эффект цены = (P₁ − P₀) × Q₁. Сумма факторов равна изменению бюджета.`)}`,fn:`budget_factors(branch="${br}", period="IV кв. 2026", base="${base}")`};
+  }
+  // лимит
+  if (/лимит/.test(t)){
+    const m=t.replace(/\s/g,'').match(/(\d[\d]*)(000|тыс|к)?/); let L=m?+m[1]:null; if (L && L<10000) L*=1000;
+    const br=bs.length===1?bs[0]:b1; const pl=plan(br,'quarter','all'); L=L||limitFor(br,'quarter'); const over=pl.total-L;
+    const tr=transfers().filter(x=>x.to===br), trSum=tr.reduce((a,x)=>a+x.save,0);
+    const defer=[]; for (const x of pl.rows) for (const o of x.r.orders) if (o.cost && diffDays(o.date,TODAY)>30 && !o.urgent) defer.push({x,o}); const dSum=defer.reduce((a,d)=>a+d.o.cost,0);
+    const ssSave=pl.total-plan(br,'quarter','all',{ssDays:5}).total;
+    return {html:`<h4>${over>0?'Не укладываемся':'Укладываемся'}: план ${fmtR(pl.total)} при лимите ${fmtR(L)} · ${bname(br)}, IV кв.</h4>${over>0?`Превышение ${fmtR(over)} (${fmtPct(over/L,0)}). Критичные позиции я не сокращаю, предлагаю варианты:${tbl(['Вариант','Экономия','Риск'],[
+      ['Перемещение излишков из других филиалов',fmtR(trSum),'низкий'],['Перенос заказов, срок которых позже 30 дней',fmtR(dSum),'средний'],['Снижение страхового запаса до 5 дней',fmtR(ssSave),'высокий']])}
+      ${trSum+dSum+ssSave<over?`<b>Даже все варианты вместе дают ${fmtR(trSum+dSum+ssSave)}.</b> Лимит ниже обязательной потребности: позиции с риском дефицита (${pl.rows.filter(x=>x.r.orders.some(o=>o.urgent)).map(x=>x.p.name.toLowerCase()).join(', ')}) нужно заказать сегодня. Рекомендую согласовать лимит не ниже ${fmtR(Math.ceil((pl.total-trSum-dSum)/10000)*10000)}.`:'Комбинации вариантов достаточно, чтобы уложиться в лимит.'}`:`Резерв ${fmtR(-over)}.`}
+      ${why('План = Σ рекомендованных закупок IV кв. по позициям филиала. Лимит сохранён в параметрах плана; варианты считаются пересчётом плана с изменёнными параметрами.')}<div style="margin-top:6px"><button class="btn ghost" onclick="S.branch='${br}';S.period='quarter';go('plan')">Открыть план с лимитом</button></div>`,fn:`plan_budget(branch="${br}", period="quarter", limit=${L}) → limit_options()`};
+  }
+  // бюджет по филиалам
+  if (/по филиал|отдельно по|по розе|по адлер|по сириус/.test(t) && /бюджет|план/.test(t)){
+    const list=bs.length?bs:BRANCHES.map(b=>b.id); const p2=per||'quarter';
+    const rows=list.map(b=>{const pl=plan(b,p2,'all');const L=limitFor(b,p2);return [bname(b),fmtR(pl.total),fmtR(L),pl.total>L?`<span class="chip red">+${fmtR(pl.total-L)}</span>`:`<span class="chip green">резерв ${fmtR(L-pl.total)}</span>`];});
+    return {html:`<h4>Бюджет закупок по филиалам · ${PERIODS[p2].title}</h4>${tbl(['Филиал','План','Лимит','Отклонение'],rows)}${why('Для каждого филиала выполнен отдельный расчёт по его загрузке, остаткам и открытым заказам.')}`,fn:list.map(b=>`plan_budget(branch="${b}", period="${p2}")`).join('; ')};
+  }
+  // план / бюджет
+  if (/план|бюджет/.test(t)){
+    const p2=per||'quarter'; const br=bs.length===1?bs[0]:'all'; const pl=plan(br,p2,'all'); const cols=planCols(pl.per);
+    const catRows=CATS.map((c,i)=>{const rs=pl.rows.filter(x=>x.p.cat===i);return [c,...cols.map(cl=>fmtN(rs.reduce((a,x)=>a+x.r.orders.filter(o=>cl.test(o.date)).reduce((s,o)=>s+(o.cost||0),0),0)/1000,1)),fmtR(pl.byCat[i]||0)];});
+    catRows.push(['<b>Итого</b>',...cols.map(cl=>'<b>'+fmtN(pl.rows.reduce((a,x)=>a+x.r.orders.filter(o=>cl.test(o.date)).reduce((s,o)=>s+(o.cost||0),0),0)/1000,1)+'</b>'),'<b>'+fmtR(pl.total)+'</b>']);
+    const top=pl.rows.filter(x=>x.r.cost).sort((a,b)=>b.r.cost-a.r.cost).slice(0,5);
+    return {html:`<h4>План закупок · ${pl.per.title} · ${bname(br)}</h4>${tbl(['Категория',...cols.map(c=>c.l+', тыс.'),'Итого'],catRows)}
+      Крупнейшие позиции: ${top.map(x=>`${x.p.name.toLowerCase()}${pl.bs.length>1?' ('+bname(x.b)+')':''} ${fmtR(x.r.cost)}`).join('; ')}. Лимит ${fmtR(limitFor(br,p2))}: ${pl.total>limitFor(br,p2)?'<b style="color:var(--red)">превышен</b>':'в пределах'}.
+      ${pl.rows.some(x=>x.r.nodata.length&&x.r.F>0)?'<div class="small" style="color:var(--red)">Не рассчитана маска с голубой глиной: нет цены и срока поставки.</div>':''}
+      ${why('Суммы распределены по месяцам даты заказа. Объём по каждой позиции: прогноз + страховой запас − остаток − открытые заказы, с кратностью упаковки. Расходники заказываются ежемесячно, остальные позиции раз в квартал.')}<div style="margin-top:6px"><button class="btn ghost" onclick="S.branch='${br}';S.period='${p2}';go('plan')">Открыть полный план</button></div>`,fn:`plan_budget(branch="${br}", period="${p2}", group_by=["month","category"])`};
+  }
+  // изменение загрузки
+  if (/загрузк/.test(t) && /%|процент/.test(t) && sku){
+    const n=+(t.match(/(\d+)\s*%/)||[0,0])[1]*(/сниз|упад|меньше/.test(t)?-1:1); const mi=/декабр/.test(t)?2:/ноябр/.test(t)?1:/октябр/.test(t)?0:null;
+    const adj=mi===null?{all:n}:{[mi]:n}; const a=calcPurchase(b1,sku,'quarter'), b=calcPurchase(b1,sku,'quarter',{adj}); const p=P[sku];
+    return {html:`<h4>${p.name}, ${bname(b1)}: загрузка ${mi===null?'':MNAME[MONTHS[mi].m]+' '}${n>0?'+':''}${n}%</h4>${tbl(['Показатель','Базовый план','С изменением','Разница'],[
+      ['Прогноз расхода IV кв.',fmtQ(a.F,p),fmtQ(b.F,p),'+'+fmtQ(b.F-a.F,p)],['Страховой запас',fmtQ(a.ss,p),fmtQ(b.ss,p),'+'+fmtQ(b.ss-a.ss,p)],['Объём закупки',fmtQ(a.qty,p),fmtQ(b.qty,p),'+'+fmtQ(b.qty-a.qty,p)],['Стоимость',fmtR(a.cost),fmtR(b.cost),'+'+fmtR(b.cost-a.cost)],['Дата заказа',fmtD(a.firstDate),fmtD(b.firstDate),'']])}
+      ${b.qty===a.qty?'Объём не изменился: прирост расхода покрывается округлением до коробки.':`Нужно на ${Math.round((b.qty-a.qty)/p.pack)} ${p.packName.split(' ')[0]} больше.`}${bNote}
+      ${why(`Процедуры ${mi===null?'всех месяцев':MNAME[MONTHS[mi].m]} × ${1+n/100}. Далее тот же расчёт: прогноз + СЗ − остаток − открытые заказы, кратность ${p.pack} ${p.unit}.`)}`,fn:`calc_purchase(sku="${sku}", branch="${b1}", horizon=3, load_adj=${JSON.stringify(adj)})`};
+  }
+  // резкое изменение расхода
+  if (/резк|изменил.*расход|расход.*изменил/.test(t)){
+    const W=scope.flatMap(warnings).filter(w=>w.t==='sharp');
+    return {html:`<h4>Резкое изменение расхода за последние 30 дней</h4>${W.length?tbl(['Товар · филиал','Расход 30 дн.','Средний за 90 дн.','Изменение'],W.map(w=>{const st=STOCK[w.branch][w.sku],p=P[w.sku];return [`${p.name}<div class="small muted">${bname(w.branch)}</div>`,fmtQ(st.fact30,p),fmtQ(st.fact90/3,p),`<span class="chip violet">${st.fact30>st.fact90/3?'+':'−'}${Math.abs(Math.round((st.fact30/(st.fact90/3)-1)*100))}%</span>`];})):'Резких изменений нет.'}
+      Возможные причины: изменение нормы закладки у мастеров, акция или рост записей на услугу, ошибка учёта списания. Рекомендую сверить с журналом процедур; если изменение устойчивое, скорректировать норму в техкарте, и прогноз пересчитается.
+      ${why('Сравнение фактического расхода за 30 дней со средним месячным за 90 дней. Порог сигнала ±30%.')}`,fn:`consumption_anomalies(branches=${JSON.stringify(scope)}, threshold=0.3)`};
+  }
+  // когда заказать
+  if (/когда/.test(t) && sku){
+    const r=calcPurchase(b1,sku,'quarter'),p=P[sku];
+    return {html:`<h4>${p.name}, ${bname(b1)}: заказать ${r.orders.some(o=>o.urgent)?'<span style="color:var(--red)">сегодня</span>':r.firstDate?'до '+fmtD(r.firstDate):'в этом квартале не нужно'}</h4>
+      Остаток ${fmtQ(r.avail,p)}${r.openQty?` + открытые заказы ${fmtQ(r.openQty,p)}`:''}, расход ${fmtN(r.daily,2)} ${p.unit}/день. Точка заказа ${fmtQ(r.rop,p)} = расход за срок поставки ${p.lead} дн. + страховой запас ${fmtQ(r.ss,p)}.
+      ${r.firstDate?`Остаток дойдёт до точки заказа ${fmtD(r.firstDate)}; поставка придёт ${fmtD(addDays(r.firstDate,p.lead))}, до выхода на страховой запас. Объём: ${fmtQ(r.qty,p)} на ${fmtR(r.cost)}.`:''}${bNote}
+      ${why(`Дата заказа = сегодня + (остаток + открытые заказы − точка заказа) ÷ среднесуточный расход = ${fmtD(TODAY)} + (${fmtN(r.chunks[0].stockStart,1)} + ${fmtN(r.chunks[0].arrQty,1)} − ${fmtN(r.rop,1)}) ÷ ${fmtN(r.daily,3)}.`)}`,fn:`calc_purchase(sku="${sku}", branch="${b1}", horizon=3) → order_date`};
+  }
+  // сколько закупить
+  if (sku && /сколько|закуп|заказ|нужно/.test(t) && !/остат/.test(t)){
+    const p2=per||'quarter'; const r=calcPurchase(b1,sku,p2),p=P[sku];
+    const perNote= per? '' : `<div class="notice" style="margin:6px 0">Период не указан. Я взяла <b>квартал (IV кв. 2026)</b>, это стандартный цикл заказа. Могу пересчитать на месяц, полугодие или год.</div>`;
+    return {html:`<h4>${p.name}, ${bname(b1)}, ${PERIODS[p2].title}</h4>${perNote}${tbl(['Показатель','Значение'],[
+      ['Прогнозный расход',`${fmtQ(r.F,p)} (${fmtN(r.daily,2)} ${p.unit}/день)`],['Текущий доступный остаток',fmtQ(r.avail,p)],['Открытые заказы',r.open.map(o=>`${fmtQ(o.qty,p)} (${fmtD(o.date)})`).join(', ')||'нет'],
+      ['Ожидаемый остаток без закупки',`<span style="color:${r.endNoBuy<0?'var(--red)':'inherit'}">${fmtQ(r.endNoBuy,p)}</span>`],['Страховой запас',`${fmtQ(r.ss,p)} (${r.ssDays} дн.)`],['Рекомендуемый объём закупки',`<b>${fmtQ(r.qty,p)}</b> (${Math.round(r.qty/p.pack)} × ${p.packName})`],
+      ['Ориентировочная стоимость',`<b>${fmtR(r.cost)}</b> (${fmtR(p.price)} за ${p.unit})`],['Рекомендуемая дата заказа',`<b>${r.orders.some(o=>o.urgent)?'сегодня, срочно':'до '+fmtD(r.firstDate)}</b>`],['Остаток на конец с закупкой',fmtQ(r.endStock,p)]])}${bNote}
+      ${p.price>p.prev*1.1?`<div class="small" style="color:var(--red)">Цена выросла на ${fmtPct(p.price/p.prev-1)} к прошлой закупке.</div>`:''}
+      ${why(`Прогноз = плановые процедуры × норма техкарты × коэф. факт/норма ${fmtN(kFact(b1,sku),2)}. Потребность = ${fmtN(r.F,1)} + ${fmtN(r.ss,1)} − ${fmtN(r.avail,1)} − ${fmtN(r.openQty,1)} = ${fmtN(r.chunks.reduce((a,c)=>a+Math.max(0,c.need),0),1)} ${p.unit}, округлено до кратности ${p.pack}. Стоимость = ${fmtN(r.qty,1)} × ${fmtR(p.price)}. Цена: прайс ${p.supplier} от 15.09.2026. Допущения: расход равномерный, поставка в срок ${p.lead} дн.`)}
+      <div style="margin-top:6px"><button class="btn ghost" onclick="S.calc={branch:'${b1}',sku:'${sku}',period:'${p2}',load:0,ss:null};go('calc')">Открыть расчёт с графиком</button></div>`,fn:`calc_purchase(sku="${sku}", branch="${b1}", horizon=${PERIODS[p2].n})`};
+  }
+  // остаток по товару
+  if (sku && /остат|сколько.*(есть|на складе)|парти/.test(t)){
+    const p=P[sku]; const list=bs.length?bs:(S.branch!=='all'?[S.branch]:[b1]);
+    const rows=[]; for (const b of list) for (const x of fefo(b,sku)) rows.push([`${x.id}<div class="small muted">${bname(b)}</div>`,fmtQ(x.qty,p),fmtD(x.exp),x.days<0?'просрочена':x.risk>0?'<span class="chip red">риск списания</span>':x.days<=60?'<span class="chip amber">расходовать первой</span>':'в норме']);
+    const tot=list.reduce((a,b)=>a+available(b,sku),0); const open=list.flatMap(b=>STOCK[b][sku].open);
+    return {html:`<h4>${p.name}: доступно ${fmtQ(tot,p)}</h4>${tbl(['Партия','Остаток','Годен до','Статус'],rows)}${open.length?`Открытые заказы: ${open.map(o=>`${o.no} — ${fmtQ(o.qty,p)}, поставка ${fmtD(o.date)}`).join('; ')}.`:''} Хватит примерно на ${Math.floor(tot/calcPurchase(list[0],sku,'quarter').daily)} дн. при плановом расходе.${bNote}
+      ${why(`Источник: складской учёт по партиям на ${fmtD(TODAY)} 08:00. Доступный остаток = сумма партий без просроченных и заблокированных. Порядок расхода FEFO.`)}`,fn:`get_stock(sku="${sku}", branches=${JSON.stringify(list)}, by="batch")`};
+  }
+  // списки предупреждений
+  const lists=[
+    [/без движ|не двига|не использ/,'nomove','Товары без движения больше 60 дней'],
+    [/излиш|избыт|затовар/,'excess','Избыточный запас'],
+    [/истека|срок годн|использовать перв/,'expiry','Партии с истекающим сроком (≤ 60 дней) и риском списания'],
+    [/закончат|дефицит|не хватит/,'deficit','Закончатся раньше следующей поставки'],
+    [/14 дн|две недели|нужно заказать|что заказать/,'order','Нужно заказать в ближайшие 14 дней'],
+  ];
+  for (const [re,type,title] of lists) if (re.test(t)){
+    let W=scope.flatMap(warnings); W = type==='order'? W.filter(w=>w.t==='deficit'||w.t==='order14') : W.filter(w=>w.t===type);
+    const rows=W.map(w=>{const p=P[w.sku]; const r=calcPurchase(w.branch,w.sku,'quarter'); return type==='order'||type==='deficit'?[`${p.name}<div class="small muted">${bname(w.branch)}</div>`,fmtQ(r.avail+r.openQty,p),r.orders.some(o=>o.urgent)?'<span class="chip red">сегодня</span>':fmtD(r.firstDate),fmtQ(r.qty,p),fmtR(r.cost)]:[`${p.name}<div class="small muted">${bname(w.branch)}</div>`,w.text];});
+    const sum=type==='order'||type==='deficit'? W.reduce((a,w)=>a+(calcPurchase(w.branch,w.sku,'quarter').cost||0),0):0;
+    return {html:`<h4>${title}: ${W.length}</h4>${rows.length?tbl(type==='order'||type==='deficit'?['Товар · филиал','Остаток + заказы','Заказать','Объём','Стоимость']:['Товар · филиал','Детали'],rows):'Таких позиций нет.'}${sum?`Итого к заказу: <b>${fmtR(sum)}</b>.`:''}
+      ${type==='expiry'?' Рекомендация: партии с риском переместить в филиал с большим расходом или использовать в первую очередь; по этим товарам не закупать до окончания срока.':''}
+      ${why(({deficit:'Риск дефицита: (остаток + заказы, приходящие в пределах срока поставки) ÷ среднесуточный расход < срок поставки.',order:'Дата заказа = сегодня + (остаток + открытые заказы − точка заказа) ÷ среднесуточный расход ≤ 14 дней.',expiry:'FEFO-моделирование: остаток партии минус прогнозный расход до даты окончания срока.',nomove:'Дата последнего расхода по складскому учёту старше 60 дней.',excess:'Покрытие запаса = (остаток + открытые заказы) ÷ среднесуточный расход > 120 дней.'})[type])}`,fn:`get_alerts(type="${type}", branches=${JSON.stringify(scope)})`};
+  }
+  return {html:`Я пока не поняла вопрос. Попробуйте сформулировать про конкретный товар, филиал или период, например: «Сколько скраба закупить на квартал для Сириуса?», «Какие партии истекают?», «План закупок на полугодие». Список проверенных вопросов справа.`,fn:'intent_parser → unknown'};
+}
+
+// ===== Демо-сценарий =====
+const DEMO=[
+ {st:'Шаг 1 из 5 · Состояние склада',h:'Что происходит на складе прямо сейчас',p:'Дашборд собирает остатки, партии, заказы и загрузку трёх филиалов. Сразу видно, что заказать в ближайшие 14 дней, где риск дефицита и сколько денег под риском списания.',run:()=>{S.branch='all';S.period='quarter';S.cat='all';S.wf=null;go('dash');},hl:'#kpis'},
+ {st:'Шаг 2 из 5 · Прогноз',h:'Сколько масла нужно на квартал',p:'Ключевой вопрос заказчика. Прогноз строится по плановой загрузке и нормам техкарт, с учётом партий, открытого заказа и страхового запаса. Итог: 84 л на 155 400 ₽, заказать до 13.10.2026. Ниже обоснование каждой цифры.',run:()=>{S.calc={branch:'rh',sku:'MO-01',period:'quarter',load:0,ss:null};go('calc');},hl:'#tiles'},
+ {st:'Шаг 3 из 5 · Риск',h:'Какие риски требуют решения',p:'Эфирное масло лаванды на Розе Хутор закончится раньше, чем придёт поставка, поэтому заказ нужен сегодня. У травяного сбора излишек, и часть партии не успеет израсходоваться до конца срока годности. Лаванда и водоросли подорожали больше чем на 10%.',run:()=>{S.branch='rh';S.wf=new Set(['deficit','expiry','excess','price']);go('dash');},hl:'#warns'},
+ {st:'Шаг 4 из 5 · План закупки',h:'План на квартал в один клик',p:'Позиции сгруппированы по категориям и распределены по месяцам заказа, у каждой есть объём, дата, стоимость и статус. Любую строку можно открыть и увидеть расчёт.',run:()=>{S.branch='rh';S.period='quarter';S.cat='all';go('plan');setTimeout(()=>$('#plantable').scrollIntoView({behavior:'smooth'}),50);},hl:'#plantable'},
+ {st:'Шаг 5 из 5 · Бюджет',h:'Бюджет, лимит и варианты',p:'Бюджет сравнивается с лимитом и с прошлым годом, изменение раскладывается на спрос, запасы и цены. При превышении лимита помощник предлагает варианты с оценкой риска. Решение управляющего фиксируется в журнале.',run:()=>{go('plan');window.scrollTo({top:0,behavior:'smooth'});},hl:'#budget'},
+];
+let demoI=-1;
+function demoStart(){ demoI=0; demoShow(); }
+function demoShow(){
+  document.querySelectorAll('.hl').forEach(e=>e.classList.remove('hl'));
+  if (demoI<0||demoI>=DEMO.length){ $('#demo').style.display='none'; return; }
+  const s=DEMO[demoI]; s.run(); setTimeout(()=>{const e=$(s.hl); if(e) e.classList.add('hl');},80);
+  $('#demo').style.display='block';
+  $('#demo').innerHTML=`<div class="st">${s.st}</div><div class="dots">${DEMO.map((_,i)=>`<i class="${i<=demoI?'on':''}"></i>`).join('')}</div><h4>${s.h}</h4><p>${s.p}</p><div class="row"><button class="btn ghost" onclick="demoI=-1;demoShow()">Закрыть</button>${demoI>0?'<button class="btn ghost" onclick="demoI--;demoShow()">Назад</button>':''}<button class="btn sand" onclick="demoI++;demoShow()">${demoI<DEMO.length-1?'Далее':'Готово'}</button></div>`;
+}
+render();
+</script></body></html>
